@@ -1,18 +1,25 @@
-// @Todo support `sparse` field in `GLTF_Accessor`
-// @Todo support `animations`
-// @Todo support `cameras`
-// @Todo support `weights` in `GLTF_Mesh`
-// @Todo support `targets` in `GLTF_Mesh.Primitive`
-// @Todo support `camera` in `GLTF_Node`
-// @Todo support `skin` in `GLTF_Node`
-// @Todo support `weights` in `GLTF_Node`
-// @Todo support `skins`
+/*
+This file reads `.gltf` files and simply parses their data into Jai types.
+No manipulations are applied at all.
+Everything here is meant for internal use.
+*/
+
+/*
+@Todo support `sparse` field in `GLTF_Accessor`
+@Todo support `animations`
+@Todo support `cameras`
+@Todo support `weights` in `GLTF_Mesh`
+@Todo support `targets` in `GLTF_Mesh.Primitive`
+@Todo support `camera` in `GLTF_Node`
+@Todo support `skin` in `GLTF_Node`
+@Todo support `weights` in `GLTF_Node`
+@Todo support `skins`
+*/
 
 #scope_module
 
 #import "Basic";
 #import "String";
-#import "File";
 #import "Math";
 #import "jaison";
 
@@ -41,20 +48,12 @@ is_there :: (value: s32) -> bool {
     return value != ABSENT;
 }
 
-load_gltf :: (path: string) -> ok: bool, error: string, GLTF {
-    gltf: GLTF;
+read_gltf :: (path: string) -> ok: bool, error: string, GLTF {
+    assert(is_absolute_path(path), "Path '%' is not an absolute path", path);
 
-    absolute_path := path;
-    if !is_absolute_path(path) {
-        absolute_path =, ok := get_absolute_path(path);
-        if !ok {
-            return false, tprint("Failed to get absolute path for %", path), gltf;
-        }
-    }
-
-    ok:, gltf = json_parse_file(absolute_path, GLTF);
+    ok, gltf := json_parse_file(path, GLTF);
     if !ok {
-        return false, tprint("Failed to parse GLTF JSON data from %", absolute_path), gltf;
+        return false, tprint("Failed to parse GLTF JSON data from %", path), gltf;
     }
 
     return true, "", gltf;

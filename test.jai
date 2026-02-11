@@ -3,8 +3,7 @@
     TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
 );
 #import "Compiler";
-
-#load "tests/tests.jai";
+GLTF :: #import,file "module.jai";
 
 #run {
     set_build_options_dc({
@@ -17,6 +16,10 @@
     test_test();
 
     report_memory_leaks();
+}
+
+test_test :: () {
+    scene := GLTF.load_scene("tests/assets/gyro_ball/gyro_ball.gltf");
 }
 
 setup_formatting :: () {
