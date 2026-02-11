@@ -1,12 +1,18 @@
 // @Todo support `sparse` field in `GLTF_Accessor`
 // @Todo support `animations`
 // @Todo support `cameras`
+// @Todo support `weights` in `GLTF_Mesh`
+// @Todo support `targets` in `GLTF_Mesh.Primitive`
+// @Todo support `camera` in `GLTF_Node`
+// @Todo support `skin` in `GLTF_Node`
+// @Todo support `weights` in `GLFW_Node`
 
 #scope_module
 
 #import "Basic";
 #import "String";
 #import "File";
+#import "Math";
 #import "jaison";
 
 ABSENT: s32 : -1;
@@ -71,10 +77,18 @@ release_gltf :: (gltf: *GLTF) {
     destroy_images(gltf.images);
     array_free(gltf.images);
 
+    destroy_materials(gltf.materials);
     array_free(gltf.materials);
+
+    destroy_meshes(gltf.meshes);
     array_free(gltf.meshes);
+
+    destroy_nodes(gltf.nodes);
     array_free(gltf.nodes);
+
+    destroy_samplers(gltf.samplers);
     array_free(gltf.samplers);
+
     array_free(gltf.scenes);
     array_free(gltf.skins);
     array_free(gltf.textures);
@@ -155,20 +169,124 @@ GLTF_Buffer_View :: struct {
 GLTF_Image :: struct {
      uri:         string;
     _buffer_view: s32 = ABSENT; @JsonName(bufferView)
+     name:        string;
  
     #if FULL_DATA {
         mime_type: string; @JsonName(mimeType)
-        name:      string;
     }
 }
 
-GLTF_Material :: struct {}
+GLTF_Material :: struct {
+    pbr_metallic_roughness: PBR_Metallic_Roughness;            @JsonName(pbrMetallicRoughness)
+    normal_texture:         Normal_Texture_Info;               @JsonName(normalTexture)
+    occlusion_texture:      Occlusion_Texture_Info;            @JsonName(occlusionTexture)
+    emissive_texture:       Texture_Info;                      @JsonName(emissiveTexture)
+    emissive_factor:        [3]float;                          @JsonName(emissiveFactor)
+    alpha_mode:             Alpha_Mode              = .OPAQUE; @JsonName(alphaMode)
+    alpha_cutoff:           float                   = 0.5;     @JsonName(alphaCutoff)
+    double_sided:           bool;                              @JsonName(doubleSided)
+    name:                   string;
 
-GLTF_Mesh :: struct {}
+    PBR_Metallic_Roughness :: struct {
+        base_color_factor:          [4]float      = float.[1, 1, 1, 1]; @JsonName(baseColorFactor)
+        base_color_texture:         Texture_Info;                       @JsonName(baseColorTexture)
+        metallic_factor:            float         = 1;                  @JsonName(metallicFactor)
+        roughness_factor:           float         = 1;                  @JsonName(roughnessFactor)
+        metallic_roughness_texture: Texture_Info;                       @JsonName(metallicRoughnessTexture)
+    }
 
-GLTF_Node :: struct {}
+    Normal_Texture_Info :: struct {
+        using texture: Texture_Info;
 
-GLTF_Sampler :: struct {}
+        scale: float = 1;
+    }
+
+    Occlusion_Texture_Info :: struct {
+        using texture: Texture_Info;
+
+        strength: float = 1;
+    }
+
+    Alpha_Mode :: enum {
+        UNKNOWN;
+        OPAQUE;
+        MASK;
+        BLEND;
+    }
+
+    Texture_Info :: struct {
+        _index:     s32 = ABSENT; @JsonName(index)
+         tex_coord: s32;          @JsonName(texCoord)
+    }
+}
+
+GLTF_Mesh :: struct {
+    primitives: [..]Primitive;
+    name:       string;
+
+    Primitive :: struct {
+         attributes: Attributes;
+        _indices:    s32         = ABSENT;     @JsonName(indices)
+        _material:   s32         = ABSENT;     @JsonName(material)
+         mode:       Mode        = .TRIANGLES;
+    }
+
+    Attributes :: struct {
+        _position:   s32 = ABSENT; @JsonName(POSITION)
+        _normal:     s32 = ABSENT; @JsonName(NORMAL)
+        _texcoord_0: s32 = ABSENT; @JsonName(TEXCOORD_0)
+    }
+
+    Mode :: enum s32 #specified {
+        POINTS         :: 0;
+        LINES          :: 1;
+        LINE_LOOP      :: 2;
+        LINE_STRIP     :: 3;
+        TRIANGLES      :: 4;
+        TRIANGLE_STRIP :: 5;
+        TRIANGLE_FAN   :: 6;
+    }
+}
+
+GLTF_Node :: struct {
+     children:    [..]s32;
+     matrix:      [16]float = #run Matrix4_Identity.floats;
+    _mesh:        s32       = ABSENT;                       @JsonName(mesh)
+     rotation:    [4]float  = float.[0, 0, 0, 1];
+     scale:       [3]float  = float.[1, 1, 1];
+     translation: [3]float;
+     name:        string;
+}
+
+GLTF_Sampler :: struct {
+    mag_filter: Mag_Filter = .UNKNOWN; @JsonName(magFilter)
+    min_filter: Min_Filter = .UNKNOWN; @JsonName(minFilter)
+    wrap_s:     Wrap_Mode  = .REPEAT;  @JsonName(wrapS)
+    wrap_t:     Wrap_Mode  = .REPEAT;  @JsonName(wrapT)
+    name:       string;
+
+    Mag_Filter :: enum s32 #specified {
+        UNKNOWN :: 0;
+        NEAREST :: 9728;
+        LINEAR  :: 9729;
+    }
+
+    Min_Filter :: enum s32 #specified {
+        UNKNOWN                :: 0;
+        NEAREST                :: 9728;
+        LINEAR                 :: 9729;
+        NEAREST_MIPMAP_NEAREST :: 9984;
+        LINEAR_MIPMAP_NEAREST  :: 9985;
+        NEAREST_MIPMAP_LINEAR  :: 9986;
+        LINEAR_MIPMAP_LINEAR   :: 9987;
+    }
+
+    Wrap_Mode :: enum s32 #specified {
+        CLAMP_TO_EDGE   :: 33071;
+        MIRRORED_REPEAT :: 33648;
+        REPEAT          :: 10497;
+    }
+}
 
 GLTF_Scene :: struct {}
 
@@ -221,10 +339,37 @@ destroy_buffer_views :: (buffer_views: []GLTF_Buffer_View) {
 destroy_images :: (images: []GLTF_Image) {
     for image: images {
         free(image.uri);
+        free(image.name);
 
         #if FULL_DATA {
             free(image.mime_type);
-            free(image.name);
         }
+    }
+}
+
+destroy_materials :: (materials: []GLTF_Material) {
+    for material: materials {
+        free(material.name);
+    }
+}
+
+destroy_meshes :: (meshes: []GLTF_Mesh) {
+    for mesh: meshes {
+        free(mesh.name);
+
+        array_free(mesh.primitives);
+    }
+}
+
+destroy_nodes :: (nodes: []GLTF_Node) {
+    for node: nodes {
+        array_free(node.children);
+        free(node.name);
+    }
+}
+
+destroy_samplers :: (samplers: []GLTF_Sampler) {
+    for sampler: samplers {
+        free(sampler.name);
     }
 }
