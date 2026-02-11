@@ -5,7 +5,8 @@
 // @Todo support `targets` in `GLTF_Mesh.Primitive`
 // @Todo support `camera` in `GLTF_Node`
 // @Todo support `skin` in `GLTF_Node`
-// @Todo support `weights` in `GLFW_Node`
+// @Todo support `weights` in `GLTF_Node`
+// @Todo support `skins`
 
 #scope_module
 
@@ -33,7 +34,6 @@ GLTF :: struct {
     nodes:        [..]GLTF_Node;
     samplers:     [..]GLTF_Sampler;
     scenes:       [..]GLTF_Scene;
-    skins:        [..]GLTF_Skin;
     textures:     [..]GLTF_Texture;
 }
 
@@ -89,8 +89,10 @@ release_gltf :: (gltf: *GLTF) {
     destroy_samplers(gltf.samplers);
     array_free(gltf.samplers);
 
+    destroy_scenes(gltf.scenes);
     array_free(gltf.scenes);
-    array_free(gltf.skins);
+
+    destroy_textures(gltf.textures);
     array_free(gltf.textures);
 
     gltf.* = {};
@@ -288,11 +290,16 @@ GLTF_Sampler :: struct {
     }
 }
 
-GLTF_Scene :: struct {}
+GLTF_Scene :: struct {
+    nodes: [..]s32;
+    name:  string;
+}
 
-GLTF_Skin :: struct {}
-
-GLTF_Texture :: struct {}
+GLTF_Texture :: struct {
+    _sampler: s32     = ABSENT; @JsonName(sampler)
+    _source:  s32     = ABSENT; @JsonName(source)
+     name:    string;
+}
 
 
 
@@ -371,5 +378,18 @@ destroy_nodes :: (nodes: []GLTF_Node) {
 destroy_samplers :: (samplers: []GLTF_Sampler) {
     for sampler: samplers {
         free(sampler.name);
+    }
+}
+
+destroy_scenes :: (scenes: []GLTF_Scene) {
+    for scene: scenes {
+        array_free(scene.nodes);
+        free(scene.name);
+    }
+}
+
+destroy_textures :: (textures: []GLTF_Texture) {
+    for texture: textures {
+        free(texture.name);
     }
 }
