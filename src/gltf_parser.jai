@@ -8,7 +8,10 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
 
     absolute_path := gltf_path;
     if !is_absolute_path(gltf_path) {
-        absolute_path = get_absolute_path(gltf_path);
+        absolute_path =, ok := get_absolute_path(gltf_path);
+        if !ok {
+            return false, tprint("Failed to get absotlute path for '%'", gltf_path), scene;
+        }
     }
 
     ok, error, gltf := read_gltf(absolute_path);
@@ -16,6 +19,8 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
         return false, error, scene;
     }
     defer release_gltf(*gltf);
+
+    print("%\n", gltf);
 
     // @Incomplete
 

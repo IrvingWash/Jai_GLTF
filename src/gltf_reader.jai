@@ -142,7 +142,7 @@ GLTF_Accessor :: struct {
 
 GLTF_Buffer :: struct {
     uri: string;
-    byte_length: s32;
+    byte_length: s32; @JsonName(byteLength)
 
     #if FULL_DATA {
         name: string;

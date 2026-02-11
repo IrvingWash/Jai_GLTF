@@ -3,7 +3,6 @@
     TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
 );
 #import "Compiler";
-GLTF :: #import,file "module.jai";
 
 #run {
     set_build_options_dc({
@@ -19,7 +18,8 @@ GLTF :: #import,file "module.jai";
 }
 
 test_test :: () {
-    scene := GLTF.load_scene("tests/assets/gyro_ball/gyro_ball.gltf");
+    GLTF :: #import,file "module.jai"(FULL_DATA = true);
+    scene := GLTF.load_scene("tests/assets/lantern/lantern.gltf");
 }
 
 setup_formatting :: () {
