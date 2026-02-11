@@ -1,3 +1,7 @@
+// @Todo support `sparse` field in `GLTF_Accessor`
+// @Todo support `animations`
+// @Todo support `cameras`
+
 #scope_module
 
 #import "Basic";
@@ -15,10 +19,8 @@ GLTF :: struct {
     _scene: s32 = ABSENT; @JsonName(scene)
 
     accessors:    [..]GLTF_Accessor;
-    animations:   [..]GLTF_Animation;
     buffers:      [..]GLTF_Buffer;
     buffer_views: [..]GLTF_Buffer_View; @JsonName(bufferViews)
-    cameras:      [..]GLTF_Camera;
     images:       [..]GLTF_Image;
     materials:    [..]GLTF_Material;
     meshes:       [..]GLTF_Mesh;
@@ -57,12 +59,18 @@ release_gltf :: (gltf: *GLTF) {
         destroy_asset(*gltf.asset);
     }
 
+    destroy_accessors(gltf.accessors);
     array_free(gltf.accessors);
-    array_free(gltf.animations);
+
+    destroy_buffers(gltf.buffers);
     array_free(gltf.buffers);
+
+    destroy_buffer_views(gltf.buffer_views);
     array_free(gltf.buffer_views);
-    array_free(gltf.cameras);
+
+    destroy_images(gltf.images);
     array_free(gltf.images);
+
     array_free(gltf.materials);
     array_free(gltf.meshes);
     array_free(gltf.nodes);
@@ -81,17 +89,78 @@ GLTF_Asset :: struct {
     min_version: string; @JsonName(minVersion)
 }
 
-GLTF_Accessor :: struct {}
+GLTF_Accessor :: struct {
+    _buffer_view:    s32            = ABSENT;   @JsonName(bufferView)
+     byte_offset:    s32;                       @JsonName(byteOffset)
+     component_type: Component_Type = .UNKNOWN; @JsonName(componentType)
+     normalized:     bool;
+     count:          s32;
+     type:           Accessor_Type  = .UNKNOWN;
+     max:            [..]float;
+     min:            [..]float;
 
-GLTF_Animation :: struct {}
+    #if FULL_DATA {
+        name: string;
+    }
 
-GLTF_Buffer :: struct {}
+     Component_Type :: enum s32 #specified {
+         UNKNOWN        :: 0;
+         BYTE           :: 5120;
+         UNSIGNED_BYTE  :: 5121;
+         SHORT          :: 5122;
+         UNSIGNED_SHORT :: 5123;
+         UNSIGNED_INT   :: 5125;
+         FLOAT          :: 5126;
+     }
 
-GLTF_Buffer_View :: struct {}
+     Accessor_Type :: enum {
+         UNKNOWN;
+         SCALAR;
+         VEC2;
+         VEC3;
+         VEC4;
+         MAT2;
+         MAT3;
+         MAT4;
+     }
+}
 
-GLTF_Camera :: struct {}
+GLTF_Buffer :: struct {
+    uri: string;
+    byte_length: s32;
 
-GLTF_Image :: struct {}
+    #if FULL_DATA {
+        name: string;
+    }
+}
+
+GLTF_Buffer_View :: struct {
+     buffer:      s32;
+     byte_offset: s32;               @JsonName(byteOffset)
+     byte_length: s32;               @JsonName(byteLength)
+    _byte_stride: s32    = ABSENT;   @JsonName(byteStride)
+     target:      Target = .UNKNOWN; @JsonName(target)
+
+    #if FULL_DATA {
+        name: string;
+    }
+
+    Target :: enum s32 #specified {
+        UNKNOWN              :: 0;
+        ARRAY_BUFFER         :: 34962;
+        ELEMENT_ARRAY_BUFFER :: 34963;
+    }
+}
+
+GLTF_Image :: struct {
+     uri:         string;
+    _buffer_view: s32 = ABSENT; @JsonName(bufferView)
+ 
+    #if FULL_DATA {
+        mime_type: string; @JsonName(mimeType)
+        name:      string;
+    }
+}
 
 GLTF_Material :: struct {}
 
@@ -114,11 +183,48 @@ GLTF_Texture :: struct {}
 destroy_asset :: (asset: *GLTF_Asset) {
     free(asset.generator);
     free(asset.version);
-
-    #if FULL_DATA {
-        free(asset.copyright);
-        free(asset.min_version);
-    }
+    free(asset.copyright);
+    free(asset.min_version);
 
     asset.* = {};
+}
+
+destroy_accessors :: (accessors: []GLTF_Accessor) {
+    for accessor: accessors {
+        array_free(accessor.max);
+        array_free(accessor.min);
+
+        #if FULL_DATA {
+            free(accessor.name);
+        }
+    }
+}
+
+destroy_buffers :: (buffers: []GLTF_Buffer) {
+    for buffer: buffers {
+        free(buffer.uri);
+
+        #if FULL_DATA {
+            free(buffer.name);
+        }
+    }
+}
+
+destroy_buffer_views :: (buffer_views: []GLTF_Buffer_View) {
+    #if FULL_DATA {
+        for buffer_view: buffer_views {
+            free(buffer_view.name);
+        }
+    }
+}
+
+destroy_images :: (images: []GLTF_Image) {
+    for image: images {
+        free(image.uri);
+
+        #if FULL_DATA {
+            free(image.mime_type);
+            free(image.name);
+        }
+    }
 }
