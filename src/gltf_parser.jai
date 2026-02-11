@@ -1,3 +1,8 @@
+/*
+This file parses a `.gltf` file into a `Scene`.
+The `Scene` is meant to be consumable into a rendering application.
+*/
+
 #import "File";
 #import "String";
 
