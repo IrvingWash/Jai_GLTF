@@ -1,7 +1,8 @@
 {
     "roots": [
         "module.jai",
-        "tests.jai"
+        "tests/tests.jai",
+        "install_tools.jai"
     ],
     "build_root": "tests.jai",
     "local_modules": [

@@ -3,28 +3,34 @@
 #import "Basic";
 #import "String";
 #import "File";
+#import "jaison";
 
-// https://github.com/KhronosGroup/glTF-Sample-Assets/blob/main/Models/Models-core.md
-// https://github.com/KhronosGroup/glTF-Sample-Assets/blob/main/Models/Models-testing.md
+ABSENT: s32 : -1;
 
 GLTF :: struct {
-    asset: GLTF_Asset;
+    #if FULL_DATA {
+        asset: GLTF_Asset;
+    }
 
-    _scene: s32 = -1;
+    _scene: s32 = ABSENT; @JsonName(scene)
 
-    _accessors:    [..]GLTF_Accessor;
-    _animations:   [..]GLTF_Animation;
-    _buffers:      [..]GLTF_Buffer;
-    _buffer_views: [..]GLTF_Buffer_View; @JsonName(bufferViews)
-    _cameras:      [..]GLTF_Camera;
-    _images:       [..]GLTF_Image;
-    _materials:    [..]GLTF_Material;
-    _meshes:       [..]GLTF_Mesh;
-    _nodes:        [..]GLTF_Node;
-    _samplers:     [..]GLTF_Sampler;
-    _scenes:       [..]GLTF_Scene;
-    _skins:        [..]GLTF_Skin;
-    _textures:     [..]GLTF_Texture;
+    accessors:    [..]GLTF_Accessor;
+    animations:   [..]GLTF_Animation;
+    buffers:      [..]GLTF_Buffer;
+    buffer_views: [..]GLTF_Buffer_View; @JsonName(bufferViews)
+    cameras:      [..]GLTF_Camera;
+    images:       [..]GLTF_Image;
+    materials:    [..]GLTF_Material;
+    meshes:       [..]GLTF_Mesh;
+    nodes:        [..]GLTF_Node;
+    samplers:     [..]GLTF_Sampler;
+    scenes:       [..]GLTF_Scene;
+    skins:        [..]GLTF_Skin;
+    textures:     [..]GLTF_Texture;
+}
+
+is_there :: (value: s32) -> bool {
+    return value != ABSENT;
 }
 
 load_gltf :: (path: string) -> ok: bool, error: string, GLTF {
@@ -38,12 +44,42 @@ load_gltf :: (path: string) -> ok: bool, error: string, GLTF {
         }
     }
 
+    ok:, gltf = json_parse_file(absolute_path, GLTF);
+    if !ok {
+        return false, tprint("Failed to parse GLTF JSON data from %", absolute_path), gltf;
+    }
+
     return true, "", gltf;
 }
 
-release_gltf :: (gltf: *GLTF) {}
+release_gltf :: (gltf: *GLTF) {
+    #if FULL_DATA {
+        destroy_asset(*gltf.asset);
+    }
 
-GLTF_Asset :: struct {}
+    array_free(gltf.accessors);
+    array_free(gltf.animations);
+    array_free(gltf.buffers);
+    array_free(gltf.buffer_views);
+    array_free(gltf.cameras);
+    array_free(gltf.images);
+    array_free(gltf.materials);
+    array_free(gltf.meshes);
+    array_free(gltf.nodes);
+    array_free(gltf.samplers);
+    array_free(gltf.scenes);
+    array_free(gltf.skins);
+    array_free(gltf.textures);
+
+    gltf.* = {};
+}
+
+GLTF_Asset :: struct {
+    generator:   string;
+    version:     string;
+    copyright:   string;
+    min_version: string; @JsonName(minVersion)
+}
 
 GLTF_Accessor :: struct {}
 
@@ -74,3 +110,15 @@ GLTF_Texture :: struct {}
 
 
 #scope_file
+
+destroy_asset :: (asset: *GLTF_Asset) {
+    free(asset.generator);
+    free(asset.version);
+
+    #if FULL_DATA {
+        free(asset.copyright);
+        free(asset.min_version);
+    }
+
+    asset.* = {};
+}
