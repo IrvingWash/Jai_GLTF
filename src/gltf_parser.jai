@@ -3,8 +3,6 @@ This file parses a `.gltf` file into a `Scene`.
 The `Scene` is meant to be consumable into a rendering application.
 */
 
-// @Todo: minimize temp allocator usage. Maybe let it remain only for tprinting errors
-
 #import "Basic";
 #import "File";
 #import "String";
@@ -107,8 +105,7 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
 
     root_path := path_strip_filename(absolute_path,, pool_allocator);
 
-    error =, loaded_gltf_buffers := load_gltf_buffers(gltf, root_path);
-    defer release_loaded_gltf_buffers(loaded_gltf_buffers);
+    error =, loaded_gltf_buffers := load_gltf_buffers(gltf, root_path,, pool_allocator);
     if error {
         return error, scene;
     }
@@ -155,19 +152,11 @@ release_scene :: (scene: *Scene) {
 
 Loaded_GLTF_Buffer :: #type,isa string;
 
-SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
-
-is_supported_version :: (gltf: GLTF) -> bool {
-    ok := array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version);
-
-    return ok;
-}
-
 load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, [..]Loaded_GLTF_Buffer {
     buffers: [..]Loaded_GLTF_Buffer;
 
     for gltf_buffer: gltf.buffers {
-        absolute_buffer_path := path_join(root_path, gltf_buffer.uri,, temp);
+        absolute_buffer_path := path_join(root_path, gltf_buffer.uri);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
             return tprint("Failed to read buffer from %", absolute_buffer_path),
@@ -183,14 +172,6 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, [..]Loade
     return "", buffers;
 }
 
-release_loaded_gltf_buffers :: (buffers: [..]Loaded_GLTF_Buffer) {
-    for buffer: buffers {
-        free(buffer);
-    }
-
-    array_free(buffers);
-}
-
 get_gltf_primitives_count :: (gltf: GLTF) -> u32 {
     result: u32;
 
@@ -201,6 +182,14 @@ get_gltf_primitives_count :: (gltf: GLTF) -> u32 {
     }
 
     return result;
+}
+
+SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
+
+is_supported_version :: (gltf: GLTF) -> bool {
+    ok := array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version);
+
+    return ok;
 }
 
 #load "gltf_reader.jai";
