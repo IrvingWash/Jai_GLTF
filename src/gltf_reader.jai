@@ -117,26 +117,26 @@ GLTF_Accessor :: struct {
         name: string;
     }
 
-     Component_Type :: enum s32 #specified {
-         UNKNOWN        :: 0;
-         BYTE           :: 5120;
-         UNSIGNED_BYTE  :: 5121;
-         SHORT          :: 5122;
-         UNSIGNED_SHORT :: 5123;
-         UNSIGNED_INT   :: 5125;
-         FLOAT          :: 5126;
-     }
+    Component_Type :: enum s32 #specified {
+        UNKNOWN        :: 0;
+        BYTE           :: 5120;
+        UNSIGNED_BYTE  :: 5121;
+        SHORT          :: 5122;
+        UNSIGNED_SHORT :: 5123;
+        UNSIGNED_INT   :: 5125;
+        FLOAT          :: 5126;
+    }
 
-     Accessor_Type :: enum {
-         UNKNOWN;
-         SCALAR;
-         VEC2;
-         VEC3;
-         VEC4;
-         MAT2;
-         MAT3;
-         MAT4;
-     }
+    Accessor_Type :: enum {
+        UNKNOWN;
+        SCALAR;
+        VEC2;
+        VEC3;
+        VEC4;
+        MAT2;
+        MAT3;
+        MAT4;
+    }
 }
 
 GLTF_Buffer :: struct {
@@ -170,7 +170,7 @@ GLTF_Image :: struct {
      uri:         string;
     _buffer_view: s32 = ABSENT; @JsonName(bufferView)
      name:        string;
- 
+
     #if FULL_DATA {
         mime_type: string; @JsonName(mimeType)
     }

@@ -22,6 +22,7 @@ test_test :: () {
 
     ok, error, scene := GLTF.load_scene("tests/assets/lantern/lantern.gltf");
     assert(ok, error);
+    defer GLTF.release_scene(*scene);
 }
 
 setup_formatting :: () {
