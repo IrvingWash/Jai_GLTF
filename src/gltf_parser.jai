@@ -16,10 +16,11 @@ Scene :: struct {
 Node :: struct {
     name: string;
 
-    parent:       *Node;
-    children: [..]*Node;
+    parent_index:     s32      = -1;
+    children_indices: [..]s32;
 
-    meshes: [..]*Mesh;
+    first_mesh_index: s32 = -1;
+    mesh_count:       s32;
 
     local_transform: Matrix4 = Matrix4_Identity; // Row-major
 }
@@ -45,7 +46,7 @@ Vertex :: struct {
 Material :: struct {
     name: string;
 
-    // @Incomplete Do we want separate samplers and textures in the scene or should we combine them all in material?
+    // @Incomplete
 }
 
 load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
@@ -54,6 +55,7 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
     // =========================================================================
     // Preparing
     // =========================================================================
+
     absolute_path := gltf_path;
     if !is_absolute_path(gltf_path) {
         absolute_path =, ok := get_absolute_path(gltf_path);
@@ -94,9 +96,9 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
             scene;
     }
 
-    containing_path := path_strip_filename(absolute_path);
+    root_path := path_strip_filename(absolute_path);
 
-    ok =, error =, loaded_gltf_buffers := load_gltf_buffers(gltf, containing_path);
+    ok =, error =, loaded_gltf_buffers := load_gltf_buffers(gltf, root_path);
     defer release_loaded_gltf_buffers(loaded_gltf_buffers);
     if !ok {
         return false, error, scene;
@@ -106,7 +108,13 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
     // Parsing
     // =========================================================================
 
-    // @Incomplete
+    scene.name = copy_string(gltf.scenes[0].name);
+    array_reserve(*scene.nodes, gltf.nodes.count);
+    array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
+
+    for gltf_node: gltf.nodes {
+        // @Incomplete
+    }
 
     return true, "", scene;
 }
@@ -116,8 +124,7 @@ release_scene :: (scene: *Scene) {
 
     for node: scene.nodes {
         free(node.name);
-        array_free(node.children);
-        array_free(node.meshes);
+        array_free(node.children_indices);
     }
     array_free(scene.nodes);
 
@@ -137,12 +144,7 @@ release_scene :: (scene: *Scene) {
 
 #scope_file
 
-Loaded_GLTF_Buffer :: struct {
-    data:  Bytes;
-    index: s32;
-
-    Bytes :: #type,isa string;
-}
+Loaded_GLTF_Buffer :: #type,isa string;
 
 SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
 
@@ -152,11 +154,11 @@ is_supported_version :: (gltf: GLTF) -> bool {
     return ok;
 }
 
-load_gltf_buffers :: (gltf: GLTF, containing_path: string) -> ok: bool, error: string, [..]Loaded_GLTF_Buffer {
+load_gltf_buffers :: (gltf: GLTF, root_path: string) -> ok: bool, error: string, [..]Loaded_GLTF_Buffer {
     buffers: [..]Loaded_GLTF_Buffer;
 
     for gltf_buffer: gltf.buffers {
-        absolute_buffer_path := path_join(containing_path, gltf_buffer.uri,, temp);
+        absolute_buffer_path := path_join(root_path, gltf_buffer.uri,, temp);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
             return false, tprint("Failed to read buffer from %", absolute_buffer_path), buffers;
@@ -164,10 +166,7 @@ load_gltf_buffers :: (gltf: GLTF, containing_path: string) -> ok: bool, error: s
 
         array_add(
             *buffers,
-            {
-                data = cast(Loaded_GLTF_Buffer.Bytes, bytes),
-                index = cast(s32, it_index),
-            },
+            cast(Loaded_GLTF_Buffer, bytes),
         );
     }
 
@@ -176,10 +175,22 @@ load_gltf_buffers :: (gltf: GLTF, containing_path: string) -> ok: bool, error: s
 
 release_loaded_gltf_buffers :: (buffers: [..]Loaded_GLTF_Buffer) {
     for buffer: buffers {
-        free(buffer.data);
+        free(buffer);
     }
 
     array_free(buffers);
+}
+
+get_gltf_primitives_count :: (gltf: GLTF) -> u32 {
+    result: u32;
+
+    for mesh: gltf.meshes {
+        for primitive: mesh.primitives {
+            result += 1;
+        }
+    }
+
+    return result;
 }
 
 #load "gltf_reader.jai";
