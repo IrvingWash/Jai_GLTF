@@ -20,9 +20,11 @@
 test_test :: () {
     GLTF :: #import,file "module.jai"(FULL_DATA = true);
 
-    ok, error, scene := GLTF.load_scene("tests/assets/lantern/lantern.gltf");
+    ok, error, scene := GLTF.load_scene("assets/lantern/lantern.gltf");
     assert(ok, error);
     defer GLTF.release_scene(*scene);
+
+    print("%\n", scene);
 }
 
 setup_formatting :: () {
