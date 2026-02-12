@@ -232,12 +232,12 @@ gltf_node_index is used to subscript the list of nodes from the GLTF file.
 Other indexes, without the "gltf" prefix/postfix are used to subscript the scene.
 */
 parse_gltf_node :: (
-    gltf:                               GLTF,
-    gltf_node_index:                    s32,
-    scene:                              *Scene,
-    loaded_gltf_buffers:                []Loaded_GLTF_Buffer,
-    root_path:                          string,
-    parent_node_index:  s32 = -1,
+    gltf:                GLTF,
+    gltf_node_index:     s32,
+    scene:               *Scene,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
+    root_path:           string,
+    parent_node_index:   s32                   = -1,
 ) -> parsed_node_index: s32 {
     gltf_node := gltf.nodes[gltf_node_index];
 
