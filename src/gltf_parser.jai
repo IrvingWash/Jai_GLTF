@@ -3,6 +3,7 @@ This file parses a `.gltf` file into a `Scene`.
 The `Scene` is meant to be consumable into a rendering application.
 */
 
+#import "Basic";
 #import "File";
 #import "String";
 
@@ -25,6 +26,12 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
     }
     defer release_gltf(*gltf);
 
+    if !is_supported_version(gltf) {
+        return false,
+            tprint("File at '%' is GLTF version '%', but only % are supported supported", absolute_path, gltf.asset.version, SUPPORTED_GLTF_VERSIONS),
+            scene;
+    }
+
     print("%\n", gltf);
 
     // @Incomplete
@@ -35,5 +42,13 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
 
 
 #scope_file
+
+SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
+
+is_supported_version :: (gltf: GLTF) -> bool {
+    ok := array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version);
+
+    return ok;
+}
 
 #load "gltf_reader.jai";

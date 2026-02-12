@@ -26,9 +26,7 @@ Everything here is meant for internal use.
 ABSENT: s32 : -1;
 
 GLTF :: struct {
-    #if FULL_DATA {
-        asset: GLTF_Asset;
-    }
+    asset: GLTF_Asset;
 
     _scene: s32 = ABSENT; @JsonName(scene)
 
@@ -60,9 +58,7 @@ read_gltf :: (path: string) -> ok: bool, error: string, GLTF {
 }
 
 release_gltf :: (gltf: *GLTF) {
-    #if FULL_DATA {
-        destroy_asset(*gltf.asset);
-    }
+    destroy_asset(*gltf.asset);
 
     destroy_accessors(gltf.accessors);
     array_free(gltf.accessors);
@@ -98,10 +94,13 @@ release_gltf :: (gltf: *GLTF) {
 }
 
 GLTF_Asset :: struct {
-    generator:   string;
     version:     string;
-    copyright:   string;
-    min_version: string; @JsonName(minVersion)
+
+    #if FULL_DATA {
+        generator:   string;
+        copyright:   string;
+        min_version: string; @JsonName(minVersion)
+    }
 }
 
 GLTF_Accessor :: struct {
@@ -305,10 +304,13 @@ GLTF_Texture :: struct {
 #scope_file
 
 destroy_asset :: (asset: *GLTF_Asset) {
-    free(asset.generator);
     free(asset.version);
-    free(asset.copyright);
-    free(asset.min_version);
+
+    #if FULL_DATA {
+        free(asset.generator);
+        free(asset.copyright);
+        free(asset.min_version);
+    }
 
     asset.* = {};
 }
