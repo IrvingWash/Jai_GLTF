@@ -54,7 +54,7 @@ Material :: struct {
 
     pbr_metallic_roughness: PBR_Metallic_Roughness;
     normal_texture:         Normal_Texture;
-    oocclusion_texture:     Occlusion_Texture;
+    occlusion_texture:      Occlusion_Texture;
     emissive_texture:       Emissive_Texture;
 
     Alpha_Mode :: #type GLTF_Material.Alpha_Mode;
@@ -84,8 +84,6 @@ Material :: struct {
     }
 
     Texture :: struct {
-        name: string;
-
         image_path: string;
 
         mag_filter: Mag_Filter = .UNKNOWN;
@@ -167,10 +165,6 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
     array_reserve(*scene.nodes, gltf.nodes.count);
     array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
 
-    for gltf_node: gltf.nodes {
-        // @Incomplete
-    }
-
     return "", scene;
 }
 
@@ -189,6 +183,11 @@ release_scene :: (scene: *Scene) {
         array_free(mesh.indices);
 
         free(mesh.material.name);
+        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_path);
+        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_path);
+        free(mesh.material.normal_texture.texture.image_path);
+        free(mesh.material.occlusion_texture.texture.image_path);
+        free(mesh.material.emissive_texture.texture.image_path);
     }
     array_free(scene.meshes);
 
