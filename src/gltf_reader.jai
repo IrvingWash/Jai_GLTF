@@ -42,12 +42,26 @@ GLTF :: struct {
     textures:     [..]GLTF_Texture;
 }
 
-is_there :: (value: s32) -> bool {
-    return value != ABSENT;
-}
-
+/*
+    This procedure is called from a single place with a pool alloctor.
+    We don't need to free anything here.
+    The pool allocator will be released by the caller.
+*/
 read_gltf :: (path: string) -> ok: bool, error: string, GLTF {
-    assert(is_absolute_path(path), "Path '%' is not an absolute path", path);
+    /*
+        Just sanity checks.
+        We call this procedure only from a single place which passes an absolute path
+        and a pool allocator.
+    */
+    assert(
+        context.allocator.proc == FP.flat_pool_allocator_proc,
+        "This function can be used only with the Flat_Pool allocator.",
+    );
+    assert(
+        is_absolute_path(path),
+        "Path '%' is not an absolute path",
+        path,
+    );
 
     ok, gltf := json_parse_file(path, GLTF);
     if !ok {
