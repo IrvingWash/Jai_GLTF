@@ -7,7 +7,46 @@ The `Scene` is meant to be consumable into a rendering application.
 #import "File";
 #import "String";
 
-Scene :: struct {}
+Scene :: struct {
+    name:   string;
+    nodes:  [..]Node;
+    meshes: [..]Mesh;
+}
+
+Node :: struct {
+    name: string;
+
+    parent:       *Node;
+    children: [..]*Node;
+
+    meshes: [..]*Mesh;
+
+    local_transform: Matrix4 = Matrix4_Identity; // Row-major
+}
+
+Mesh :: struct {
+    name: string;
+
+    vertices: [..]Vertex;
+    indices:  [..]u32;
+
+    material: Material;
+
+    min_position: Vector3;
+    max_position: Vector3;
+}
+
+Vertex :: struct {
+    position: Vector3;
+    normal:   Vector3 = { 0, 0, 1 };
+    uv:       Vector2;
+}
+
+Material :: struct {
+    name: string;
+
+    // @Incomplete Do we want separate samplers and textures in the scene or should we combine them all in material?
+}
 
 load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
     scene: Scene;
@@ -73,7 +112,25 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
 }
 
 release_scene :: (scene: *Scene) {
-    // @Incomplete
+    free(scene.name);
+
+    for node: scene.nodes {
+        free(node.name);
+        array_free(node.children);
+        array_free(node.meshes);
+    }
+    array_free(scene.nodes);
+
+    for mesh: scene.meshes {
+        free(mesh.name);
+        array_free(mesh.vertices);
+        array_free(mesh.indices);
+
+        free(mesh.material.name);
+    }
+    array_free(scene.meshes);
+
+    scene.* = {};
 }
 
 
@@ -99,9 +156,10 @@ load_gltf_buffers :: (gltf: GLTF, containing_path: string) -> ok: bool, error: s
     buffers: [..]Loaded_GLTF_Buffer;
 
     for gltf_buffer: gltf.buffers {
-        bytes, ok := read_entire_file(path_join(containing_path, gltf_buffer.uri,, temp));
+        absolute_buffer_path := path_join(containing_path, gltf_buffer.uri,, temp);
+        bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
-            return false, tprint("Failed to read buffer from %", gltf_buffer.uri), buffers;
+            return false, tprint("Failed to read buffer from %", absolute_buffer_path), buffers;
         }
 
         array_add(
