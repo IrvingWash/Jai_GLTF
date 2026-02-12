@@ -45,6 +45,16 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
             scene;
     }
 
+    if gltf.scenes.count != 1 {
+        return false,
+            tprint(
+                "File at '%' contains % scenes, but only 1 scene is supported",
+                absolute_path,
+                gltf.scenes.count,
+            ),
+            scene;
+    }
+
     containing_path := path_strip_filename(absolute_path);
 
     ok =, error =, loaded_gltf_buffers := load_gltf_buffers(gltf, containing_path);
