@@ -10,6 +10,7 @@ FP :: #import "Flat_Pool";
 
 Scene :: struct {
     name:   string;
+
     nodes:  [..]Node;
     meshes: [..]Mesh;
 }
@@ -47,7 +48,55 @@ Vertex :: struct {
 Material :: struct {
     name: string;
 
-    // @Incomplete
+    double_sided: bool;
+    alpha_mode:   Alpha_Mode = .OPAQUE;
+    alpha_cutoff: float      = 0.5;
+
+    pbr_metallic_roughness: PBR_Metallic_Roughness;
+    normal_texture:         Normal_Texture;
+    oocclusion_texture:     Occlusion_Texture;
+    emissive_texture:       Emissive_Texture;
+
+    Alpha_Mode :: #type GLTF_Material.Alpha_Mode;
+
+    PBR_Metallic_Roughness :: struct {
+        base_color_factor:  Vector4 = { 1, 1, 1, 1 };
+        base_color_texture: Texture;
+
+        metallic_factor:            float    = 1;
+        roughness_factor:           float    = 1;
+        metallic_roughness_texture: Texture;
+    }
+
+    Normal_Texture :: struct {
+        scale:   float    = 1;
+        texture: Texture;
+    }
+
+    Occlusion_Texture :: struct {
+        strength: float    = 1;
+        texture:  Texture;
+    }
+
+    Emissive_Texture :: struct {
+        factor:  Vector3;
+        texture: Texture;
+    }
+
+    Texture :: struct {
+        name: string;
+
+        image_path: string;
+
+        mag_filter: Mag_Filter = .UNKNOWN;
+        min_filter: Min_Filter = .UNKNOWN;
+        wrap_s:     Wrap_Mode  = .REPEAT;
+        wrap_t:     Wrap_Mode  = .REPEAT;
+
+        Mag_Filter :: #type GLTF_Sampler.Mag_Filter;
+        Min_Filter :: #type GLTF_Sampler.Min_Filter;
+        Wrap_Mode  :: #type GLTF_Sampler.Wrap_Mode;
+    }
 }
 
 load_scene :: (gltf_path: string) -> error: string, Scene {
