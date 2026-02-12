@@ -95,12 +95,9 @@ release_gltf :: (gltf: *GLTF) {
 
 GLTF_Asset :: struct {
     version:     string;
-
-    #if FULL_DATA {
-        generator:   string;
-        copyright:   string;
-        min_version: string; @JsonName(minVersion)
-    }
+    generator:   string;
+    copyright:   string;
+    min_version: string; @JsonName(minVersion)
 }
 
 GLTF_Accessor :: struct {
@@ -112,10 +109,7 @@ GLTF_Accessor :: struct {
      type:           Accessor_Type  = .UNKNOWN;
      max:            [..]float;
      min:            [..]float;
-
-    #if FULL_DATA {
-        name: string;
-    }
+     name:           string;
 
     Component_Type :: enum s32 #specified {
         UNKNOWN        :: 0;
@@ -142,10 +136,7 @@ GLTF_Accessor :: struct {
 GLTF_Buffer :: struct {
     uri: string;
     byte_length: s32; @JsonName(byteLength)
-
-    #if FULL_DATA {
-        name: string;
-    }
+    name: string;
 }
 
 GLTF_Buffer_View :: struct {
@@ -154,10 +145,7 @@ GLTF_Buffer_View :: struct {
      byte_length: s32;               @JsonName(byteLength)
     _byte_stride: s32    = ABSENT;   @JsonName(byteStride)
      target:      Target = .UNKNOWN; @JsonName(target)
-
-    #if FULL_DATA {
-        name: string;
-    }
+     name: string;
 
     Target :: enum s32 #specified {
         UNKNOWN              :: 0;
@@ -170,10 +158,7 @@ GLTF_Image :: struct {
      uri:         string;
     _buffer_view: s32 = ABSENT; @JsonName(bufferView)
      name:        string;
-
-    #if FULL_DATA {
-        mime_type: string; @JsonName(mimeType)
-    }
+     mime_type: string; @JsonName(mimeType)
 }
 
 GLTF_Material :: struct {
@@ -305,12 +290,9 @@ GLTF_Texture :: struct {
 
 destroy_asset :: (asset: *GLTF_Asset) {
     free(asset.version);
-
-    #if FULL_DATA {
-        free(asset.generator);
-        free(asset.copyright);
-        free(asset.min_version);
-    }
+    free(asset.generator);
+    free(asset.copyright);
+    free(asset.min_version);
 
     asset.* = {};
 }
@@ -319,28 +301,20 @@ destroy_accessors :: (accessors: []GLTF_Accessor) {
     for accessor: accessors {
         array_free(accessor.max);
         array_free(accessor.min);
-
-        #if FULL_DATA {
-            free(accessor.name);
-        }
+        free(accessor.name);
     }
 }
 
 destroy_buffers :: (buffers: []GLTF_Buffer) {
     for buffer: buffers {
         free(buffer.uri);
-
-        #if FULL_DATA {
-            free(buffer.name);
-        }
+        free(buffer.name);
     }
 }
 
 destroy_buffer_views :: (buffer_views: []GLTF_Buffer_View) {
-    #if FULL_DATA {
-        for buffer_view: buffer_views {
-            free(buffer_view.name);
-        }
+    for buffer_view: buffer_views {
+        free(buffer_view.name);
     }
 }
 
@@ -348,10 +322,7 @@ destroy_images :: (images: []GLTF_Image) {
     for image: images {
         free(image.uri);
         free(image.name);
-
-        #if FULL_DATA {
-            free(image.mime_type);
-        }
+        free(image.mime_type);
     }
 }
 

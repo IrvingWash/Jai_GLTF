@@ -18,7 +18,7 @@
 }
 
 test_test :: () {
-    GLTF :: #import,file "module.jai"(FULL_DATA = true);
+    GLTF :: #import,file "module.jai";
 
     ok, error, scene := GLTF.load_scene("assets/lantern/lantern.gltf");
     assert(ok, error);
