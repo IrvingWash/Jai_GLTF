@@ -32,11 +32,14 @@ Mesh :: struct {
 
     vertices: [..]Vertex;
     indices:  [..]u32;
+    mode:     Mode = .TRIANGLES;
 
     material: Material;
 
     min_position: Vector3;
     max_position: Vector3;
+
+    Mode :: GLTF_Mesh.Mode;
 }
 
 Vertex :: struct {
@@ -141,6 +144,14 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
             scene;
     }
 
+    if gltf._scene == ABSENT {
+        return tprint(
+                "File at '%' doesn't have a default scene",
+                absolute_path,
+            ),
+            scene;
+    }
+
     if gltf.scenes.count != 1 {
         return tprint(
                 "File at '%' contains % scenes, but only 1 scene is supported",
@@ -152,7 +163,11 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
 
     root_path := path_strip_filename(absolute_path,, pool_allocator);
 
-    error =, loaded_gltf_buffers := load_gltf_buffers(gltf, root_path,, pool_allocator);
+    error =, loaded_gltf_buffers := load_gltf_buffers(
+        gltf,
+        root_path,,
+        pool_allocator
+    );
     if error {
         return error, scene;
     }
@@ -161,9 +176,23 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
     // Parsing
     // =========================================================================
 
-    scene.name = copy_string(gltf.scenes[0].name);
+    gltf_scene := gltf.scenes[gltf._scene];
+
+    scene.name = copy_string(gltf_scene.name);
+    // @Todo these reserves are correct situationally because we don't allow multiple scenes.
+    // If we had/allowed more scenes, we'd reserve too much memory with the current code.
     array_reserve(*scene.nodes, gltf.nodes.count);
     array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
+
+    for gltf_node_index: gltf_scene.nodes {
+        parse_gltf_node(
+            gltf,
+            gltf_node_index,
+            *scene,
+            loaded_gltf_buffers,
+            root_path,
+        );
+    }
 
     return "", scene;
 }
@@ -197,6 +226,97 @@ release_scene :: (scene: *Scene) {
 
 
 #scope_file
+
+/*
+gltf_node_index is used to subscript the list of nodes from the GLTF file.
+Other indexes, without the "gltf" prefix/postfix are used to subscript the scene.
+*/
+parse_gltf_node :: (
+    gltf:                               GLTF,
+    gltf_node_index:                    s32,
+    scene:                              *Scene,
+    loaded_gltf_buffers:                []Loaded_GLTF_Buffer,
+    root_path:                          string,
+    parent_node_index:  s32 = -1,
+) -> parsed_node_index: s32 {
+    gltf_node := gltf.nodes[gltf_node_index];
+
+    node: Node = {
+        name            = copy_string(gltf_node.name),
+        parent_index    = parent_node_index,
+        local_transform = extract_gltf_node_transform(gltf_node),
+    };
+
+    // At this point we have filled all the info for the node except it's children
+    array_add(*scene.nodes, node);
+
+    current_node_index := scene.nodes.count - 1;
+
+    for gltf_child_index: gltf_node.children {
+        parsed_node_index := parse_gltf_node(
+            gltf,
+            gltf_child_index,
+            scene,
+            loaded_gltf_buffers,
+            root_path,
+            cast(s32, current_node_index),
+        );
+
+        array_add(
+            *scene.nodes[current_node_index].children_indices,
+            parsed_node_index
+        );
+    }
+
+    return cast(s32, current_node_index);
+}
+
+/*
+    We don't know what the gltf file contained - the matrix or a TRS set.
+    So we proceed in three stages:
+    1. See if the matrtix is not an identity matrix. If so - it was present in the file, because otherwise GLTF_Reader would return the identity matrix.
+    Return the matrix, we're lucky!
+    But if it's an identity matrix - we don't know whether it's an actual identity matrix from the file or just the default from the GLTF_Reader.
+    We need more evidence.
+    2. Now we need to check whether the separate TRS fields were present in the file.
+    If we are here, we know that the matrix from the file doesn't transform anything.
+    So we check the TRS. If all of them are the defaults too - we just return Matrix_Identity, as we know for sure neither the matrix nor the TRS are trying to transform.
+    3. If something from the TRS gang is not at it's default, we know for sure, there is a transformation. We calculate it and return.
+*/
+extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
+    // Plan 1
+    gltf_node_transform: Matrix4 = ---;
+    gltf_node_transform.floats = gltf_node.matrix;
+    gltf_node_transform = transpose(gltf_node_transform); // Transpose because Jai has row-major matrices, but the data from gltf comes in column-major.
+
+    if gltf_node_transform != Matrix4_Identity {
+        return gltf_node_transform;
+    }
+
+    // Plan 2
+    gltf_node_translation: Vector3;
+    gltf_node_rotation:    Quaternion;
+    gltf_node_scale:       Vector3;
+
+    gltf_node_translation.component = gltf_node.translation;
+    gltf_node_rotation.component    = gltf_node.rotation;
+    gltf_node_scale.component       = gltf_node.scale;
+
+    if (
+        gltf_node_translation == Vector3.{}
+        && gltf_node_scale == Vector3.{ 1, 1, 1 }
+        && gltf_node_rotation == Quaternion.{}
+    ) {
+        return Matrix4_Identity;
+    }
+
+    // Plan 3
+    translation := make_translation_matrix4(gltf_node_translation);
+    rotation    := rotation_matrix(Matrix4, gltf_node_rotation);
+    _scale      := make_scale_matrix4(gltf_node_scale);
+
+    return translation * rotation * _scale;
+}
 
 Loaded_GLTF_Buffer :: #type,isa string;
 
