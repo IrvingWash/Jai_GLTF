@@ -3,9 +3,12 @@ This file parses a `.gltf` file into a `Scene`.
 The `Scene` is meant to be consumable into a rendering application.
 */
 
+// @Todo: minimize temp allocator usage. Maybe let it remain only for tprinting errors
+
 #import "Basic";
 #import "File";
 #import "String";
+FP :: #import "Flat_Pool";
 
 Scene :: struct {
     name:   string;
@@ -49,7 +52,17 @@ Material :: struct {
     // @Incomplete
 }
 
-load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
+load_scene :: (gltf_path: string) -> error: string, Scene {
+    pool: FP.Flat_Pool;
+    pool_allocator: Allocator = {
+        proc = FP.flat_pool_allocator_proc,
+        data = *pool,
+    };
+    defer {
+        FP.reset(*pool);
+        FP.fini(*pool);
+    }
+
     scene: Scene;
 
     // =========================================================================
@@ -58,10 +71,9 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
 
     absolute_path := gltf_path;
     if !is_absolute_path(gltf_path) {
-        absolute_path =, ok := get_absolute_path(gltf_path);
+        absolute_path =, ok := get_absolute_path(gltf_path,, pool_allocator);
         if !ok {
-            return false,
-                tprint(
+            return tprint(
                     "Failed to get absotlute path for '%'",
                     gltf_path,
                 ),
@@ -69,15 +81,13 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
         }
     }
 
-    ok, error, gltf := read_gltf(absolute_path);
-    if !ok {
-        return false, error, scene;
+    error, gltf := read_gltf(absolute_path,, pool_allocator);
+    if error {
+        return error, scene;
     }
-    defer release_gltf(*gltf);
 
     if !is_supported_version(gltf) {
-        return false,
-            tprint(
+        return tprint(
                 "File at '%' is GLTF version '%', but only % are supported supported",
                 absolute_path,
                 gltf.asset.version,
@@ -87,8 +97,7 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
     }
 
     if gltf.scenes.count != 1 {
-        return false,
-            tprint(
+        return tprint(
                 "File at '%' contains % scenes, but only 1 scene is supported",
                 absolute_path,
                 gltf.scenes.count,
@@ -96,12 +105,12 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
             scene;
     }
 
-    root_path := path_strip_filename(absolute_path);
+    root_path := path_strip_filename(absolute_path,, pool_allocator);
 
-    ok =, error =, loaded_gltf_buffers := load_gltf_buffers(gltf, root_path);
+    error =, loaded_gltf_buffers := load_gltf_buffers(gltf, root_path);
     defer release_loaded_gltf_buffers(loaded_gltf_buffers);
-    if !ok {
-        return false, error, scene;
+    if error {
+        return error, scene;
     }
 
     // =========================================================================
@@ -116,7 +125,7 @@ load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene {
         // @Incomplete
     }
 
-    return true, "", scene;
+    return "", scene;
 }
 
 release_scene :: (scene: *Scene) {
@@ -154,14 +163,15 @@ is_supported_version :: (gltf: GLTF) -> bool {
     return ok;
 }
 
-load_gltf_buffers :: (gltf: GLTF, root_path: string) -> ok: bool, error: string, [..]Loaded_GLTF_Buffer {
+load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, [..]Loaded_GLTF_Buffer {
     buffers: [..]Loaded_GLTF_Buffer;
 
     for gltf_buffer: gltf.buffers {
         absolute_buffer_path := path_join(root_path, gltf_buffer.uri,, temp);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
-            return false, tprint("Failed to read buffer from %", absolute_buffer_path), buffers;
+            return tprint("Failed to read buffer from %", absolute_buffer_path),
+                buffers;
         }
 
         array_add(
@@ -170,7 +180,7 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> ok: bool, error: string,
         );
     }
 
-    return true, "", buffers;
+    return "", buffers;
 }
 
 release_loaded_gltf_buffers :: (buffers: [..]Loaded_GLTF_Buffer) {

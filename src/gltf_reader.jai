@@ -47,7 +47,7 @@ GLTF :: struct {
     We don't need to free anything here.
     The pool allocator will be released by the caller.
 */
-read_gltf :: (path: string) -> ok: bool, error: string, GLTF {
+read_gltf :: (path: string) -> error: string, GLTF {
     /*
         Just sanity checks.
         We call this procedure only from a single place which passes an absolute path
@@ -65,10 +65,10 @@ read_gltf :: (path: string) -> ok: bool, error: string, GLTF {
 
     ok, gltf := json_parse_file(path, GLTF);
     if !ok {
-        return false, tprint("Failed to parse GLTF JSON data from %", path), gltf;
+        return tprint("Failed to parse GLTF JSON data from %", path), gltf;
     }
 
-    return true, "", gltf;
+    return "", gltf;
 }
 
 GLTF_Asset :: struct {
