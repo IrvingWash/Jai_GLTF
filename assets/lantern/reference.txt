@@ -167,14 +167,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -7.745599; 
+            y = -12.832109; 
+            z = -2.31571; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 7.745599; 
+            y = 12.832109; 
+            z = 2.31571; 
         }; 
     }, Mesh{
         name = "LanternPole_Chain"; 
@@ -246,14 +246,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.129208; 
+            y = -0.65235; 
+            z = -0.129208; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.129208; 
+            y = 0.65235; 
+            z = 0.129208; 
         }; 
     }, Mesh{
         name = "LanternPole_Lantern"; 
@@ -325,14 +325,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.034082; 
+            y = -2.529281; 
+            z = -1.034085; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.034082; 
+            y = 2.529281; 
+            z = 1.034085; 
         }; 
     }]; 
 }

@@ -1559,14 +1559,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.17216; 
+            y = -1.05781; 
+            z = -0.58715; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.53262; 
+            y = 1.07837; 
+            z = 7.92035; 
         }; 
     }, Mesh{
         name = "mccree_1"; 
@@ -1638,14 +1638,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.24608; 
+            y = -0.85013; 
+            z = 6.35462; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.18452; 
+            y = 0.01292; 
+            z = 10.14502; 
         }; 
     }, Mesh{
         name = "mccree_2"; 
@@ -1717,14 +1717,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.18031; 
+            y = -0.84144; 
+            z = 6.36131; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.24372; 
+            y = 1.36793; 
+            z = 9.81526; 
         }; 
     }, Mesh{
         name = "mccree_3"; 
@@ -1796,14 +1796,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.21187; 
+            y = -0.85013; 
+            z = 6.35462; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.17872; 
+            y = -0.11819; 
+            z = 9.66859; 
         }; 
     }, Mesh{
         name = "mccree_4"; 
@@ -1875,14 +1875,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.47065; 
+            y = -1.12048; 
+            z = -0.63865; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.58548; 
+            y = 1.70853; 
+            z = 10.97272; 
         }; 
     }, Mesh{
         name = "mccree_5"; 
@@ -1954,14 +1954,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.9337; 
+            y = -0.59922; 
+            z = 10.31324; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.84236; 
+            y = 1.09717; 
+            z = 12.13347; 
         }; 
     }, Mesh{
         name = "mccree_6"; 
@@ -2033,14 +2033,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.23868; 
+            y = -2.68027; 
+            z = -0.05544; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 3.16516; 
+            y = 1.39497; 
+            z = 9.9751; 
         }; 
     }, Mesh{
         name = "mccree_7"; 
@@ -2112,14 +2112,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.69422; 
+            y = -1.05781; 
+            z = -0.58715; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.53262; 
+            y = 1.16544; 
+            z = 11.23405; 
         }; 
     }, Mesh{
         name = "mccree_8"; 
@@ -2191,14 +2191,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.21367; 
+            y = -0.68663; 
+            z = 7.42006; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.2804; 
+            y = 1.36793; 
+            z = 12.13347; 
         }; 
     }, Mesh{
         name = "mccree_9"; 
@@ -2270,14 +2270,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.49266; 
+            y = -0.5079; 
+            z = 6.89938; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.61115; 
+            y = 0.82244; 
+            z = 11.78033; 
         }; 
     }, Mesh{
         name = "mccree_10"; 
@@ -2349,14 +2349,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.62882; 
+            y = -0.47593; 
+            z = 10.43259; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.4958; 
+            y = 0.74693; 
+            z = 11.78033; 
         }; 
     }, Mesh{
         name = "mccree_11"; 
@@ -2428,14 +2428,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.5064; 
+            y = -0.45763; 
+            z = 10.68889; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.65312; 
+            y = 0.65326; 
+            z = 12.03003; 
         }; 
     }, Mesh{
         name = "mccree_12"; 
@@ -2507,14 +2507,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.82589; 
+            y = -2.09298; 
+            z = -0.46306; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.90652; 
+            y = 1.69156; 
+            z = 9.9011; 
         }; 
     }, Mesh{
         name = "mccree_13"; 
@@ -2586,14 +2586,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.52561; 
+            y = -1.26578; 
+            z = 7.77399; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.4022; 
+            y = -0.4909; 
+            z = 8.31345; 
         }; 
     }, Mesh{
         name = "mccree_14"; 
@@ -2665,14 +2665,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.02501; 
+            y = -0.61862; 
+            z = 10.88707; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.15233; 
+            y = -0.38142; 
+            z = 11.23968; 
         }; 
     }, Mesh{
         name = "mccree_15"; 
@@ -2744,14 +2744,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.97562; 
+            y = -2.68027; 
+            z = 3.61761; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 3.16516; 
+            y = 0.1754; 
+            z = 9.92273; 
         }; 
     }, Mesh{
         name = "mccree_16"; 
@@ -2823,14 +2823,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.60136; 
+            y = -2.14881; 
+            z = 4.05616; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.77437; 
+            y = -0.20711; 
+            z = 9.85113; 
         }; 
     }, Mesh{
         name = "mccree_17"; 
@@ -2902,14 +2902,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.23401; 
+            y = -0.71721; 
+            z = 10.86012; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.09044; 
+            y = -0.6123; 
+            z = 10.97272; 
         }; 
     }, Mesh{
         name = "mccree_18"; 
@@ -2981,14 +2981,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.29971; 
+            y = -0.64581; 
+            z = 10.86377; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.21261; 
+            y = 1.17732; 
+            z = 15.19221; 
         }; 
     }, Mesh{
         name = "mccree_19"; 
@@ -3060,14 +3060,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.42908; 
+            y = -0.78072; 
+            z = 6.9734; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.45786; 
+            y = -0.7196; 
+            z = 7.43864; 
         }; 
     }, Mesh{
         name = "Cylinder.001_0"; 
@@ -3139,14 +3139,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.80183; 
+            y = -2.74735; 
+            z = -11.49732; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.86622; 
+            y = 1.70205; 
+            z = 1.96623; 
         }; 
     }, Mesh{
         name = "Cylinder.001_1"; 
@@ -3218,14 +3218,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -4.26453; 
+            y = -2.87602; 
+            z = -19.5425; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.86622; 
+            y = 1.03153; 
+            z = -0.52257; 
         }; 
     }, Mesh{
         name = "Cylinder.001_2"; 
@@ -3297,14 +3297,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -3.82418; 
+            y = -2.74735; 
+            z = -18.338181; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.64085; 
+            y = 1.70205; 
+            z = 1.96623; 
         }; 
     }, Mesh{
         name = "Cylinder.001_3"; 
@@ -3376,14 +3376,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -3.57732; 
+            y = -2.68541; 
+            z = -10.97986; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.6159; 
+            y = -1.25649; 
+            z = -1.09934; 
         }; 
     }, Mesh{
         name = "Cylinder.001_4"; 
@@ -3455,14 +3455,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -3.84452; 
+            y = -8.12469; 
+            z = -41.335239; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 4.47545; 
+            y = 2.93247; 
+            z = -31.169821; 
         }; 
     }, Mesh{
         name = "Cylinder_0"; 
@@ -3534,14 +3534,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.95383; 
+            y = -0.99443; 
+            z = -12.98845; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.93807; 
+            y = 1; 
+            z = 2.77805; 
         }; 
     }, Mesh{
         name = "Cylinder_1"; 
@@ -3613,14 +3613,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.43563; 
+            y = -0.54234; 
+            z = -9.44145; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.41158; 
+            y = 0.51664; 
+            z = 0.71245; 
         }; 
     }, Mesh{
         name = "Cylinder.002_0"; 
@@ -3692,14 +3692,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.00793; 
+            y = -1.16386; 
+            z = -0.52772; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.00793; 
+            y = 1; 
+            z = 0.83045; 
         }; 
     }, Mesh{
         name = "Cylinder.002_1"; 
@@ -3771,14 +3771,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.86603; 
+            y = -1.01542; 
+            z = 0.83045; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.88957; 
+            y = 1; 
+            z = 0.89029; 
         }; 
     }, Mesh{
         name = "Cylinder.002_2"; 
@@ -3850,14 +3850,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.00793; 
+            y = -1.16386; 
+            z = -1.03576; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.00793; 
+            y = 1.16386; 
+            z = 0.99832; 
         }; 
     }, Mesh{
         name = "Cylinder.003_0"; 
@@ -3929,14 +3929,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.00793; 
+            y = -1.16386; 
+            z = -0.52772; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.00793; 
+            y = 1; 
+            z = 0.83045; 
         }; 
     }, Mesh{
         name = "Cylinder.003_1"; 
@@ -4008,14 +4008,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.86603; 
+            y = -1.01542; 
+            z = 0.83045; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.88957; 
+            y = 1; 
+            z = 0.89029; 
         }; 
     }, Mesh{
         name = "Cylinder.003_2"; 
@@ -4087,14 +4087,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.00793; 
+            y = -1.16386; 
+            z = -1.03576; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.00793; 
+            y = 1.16386; 
+            z = 0.99832; 
         }; 
     }, Mesh{
         name = "Cylinder.004_0"; 
@@ -4166,14 +4166,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.00793; 
+            y = -1.16386; 
+            z = -0.52772; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.00793; 
+            y = 1; 
+            z = 0.83045; 
         }; 
     }, Mesh{
         name = "Cylinder.004_1"; 
@@ -4245,14 +4245,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.86603; 
+            y = -1.01542; 
+            z = 0.83045; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.88957; 
+            y = 1; 
+            z = 0.89029; 
         }; 
     }, Mesh{
         name = "Cylinder.004_2"; 
@@ -4324,14 +4324,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.00793; 
+            y = -1.16386; 
+            z = -1.03576; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.00793; 
+            y = 1.16386; 
+            z = 0.99832; 
         }; 
     }, Mesh{
         name = "Cube.001_0"; 
@@ -4403,14 +4403,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.60035; 
+            y = -1.456; 
+            z = -2.37899; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.25416; 
+            y = 1.09527; 
+            z = 1.01241; 
         }; 
     }, Mesh{
         name = "Cube.001_1"; 
@@ -4482,14 +4482,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.09441; 
+            y = -1.7767; 
+            z = -1.72086; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.84061; 
+            y = -0.04416; 
+            z = 0.07835; 
         }; 
     }, Mesh{
         name = "Cube.001_2"; 
@@ -4561,14 +4561,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -2.09441; 
+            y = -1.64963; 
+            z = -2.19608; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.49976; 
+            y = -0.55444; 
+            z = -0.04659; 
         }; 
     }, Mesh{
         name = "Cube.001_3"; 
@@ -4640,14 +4640,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.26819; 
+            y = -1.19632; 
+            z = -2.21991; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 1.1334; 
+            y = 1.09527; 
+            z = 1.01241; 
         }; 
     }, Mesh{
         name = "Cube.001_4"; 
@@ -4719,14 +4719,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.5101; 
+            y = -2.73358; 
+            z = -2.82104; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 0.29746; 
+            y = -0.64765; 
+            z = -0.19269; 
         }; 
     }, Mesh{
         name = "GUN_0"; 
@@ -4798,14 +4798,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.86825; 
+            y = -2.23963; 
+            z = -0.77146; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 7.19775; 
+            y = 2.23963; 
+            z = 17.14242; 
         }; 
     }, Mesh{
         name = "GUN_1"; 
@@ -4877,14 +4877,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.86825; 
+            y = -0; 
+            z = -0.7313; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.2275; 
+            y = 1.85225; 
+            z = 13.5302; 
         }; 
     }, Mesh{
         name = "GUN_2"; 
@@ -4956,14 +4956,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -0.98246; 
+            y = -1.85226; 
+            z = 8.33029; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.2275; 
+            y = 1.85225; 
+            z = 12.11365; 
         }; 
     }, Mesh{
         name = "GUN_3"; 
@@ -5035,14 +5035,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = -1.63515; 
+            y = -1; 
+            z = -0.77146; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 7.19775; 
+            y = 2.23963; 
+            z = 17.14242; 
         }; 
     }, Mesh{
         name = "GUN_4"; 
@@ -5114,14 +5114,14 @@ Scene{
             }; 
         }; 
         min_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.23677; 
+            y = -0.46115; 
+            z = -0.26451; 
         }; 
         max_position = Vector3{
-            x = 0; 
-            y = 0; 
-            z = 0; 
+            x = 2.78971; 
+            y = 0.71359; 
+            z = 1.42237; 
         }; 
     }]; 
 }
