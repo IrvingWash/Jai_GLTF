@@ -18,11 +18,6 @@ Everything here is meant for internal use.
 
 #scope_module
 
-#import "Basic";
-#import "String";
-#import "Math";
-#import "jaison";
-
 GLTF :: struct {
     asset: GLTF_Asset;
 
@@ -261,3 +256,13 @@ GLTF_Texture :: struct {
     _source:  s32     = ABSENT; @JsonName(source)
      name:    string;
 }
+
+
+
+#scope_file
+
+#import "Basic";
+#import "String";
+#import "Math";
+#import "jaison";
+FP :: #import "Flat_Pool";

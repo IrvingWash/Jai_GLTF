@@ -3,11 +3,6 @@
     The `Scene` is meant to be consumable into a rendering application.
 */
 
-#import "Basic";
-#import "File";
-#import "String";
-FP :: #import "Flat_Pool";
-
 Scene :: struct {
     name:   string;
 
@@ -101,16 +96,31 @@ Material :: struct {
     }
 }
 
-load_scene :: (gltf_path: string) -> error: string, Scene {
+// If multithreading, use one loader per thread. Which means call init once per thread.
+GLTF_Loader :: struct {
     pool: FP.Flat_Pool;
-    pool_allocator: Allocator = {
+    allocator: Allocator;
+}
+
+init :: () -> *GLTF_Loader {
+    loader := New(GLTF_Loader);
+
+    loader.allocator = {
         proc = FP.flat_pool_allocator_proc,
-        data = *pool,
+        data = *loader.pool,
     };
-    defer {
-        FP.reset(*pool);
-        FP.fini(*pool);
-    }
+
+    return loader;
+}
+
+deinit :: (loader: *GLTF_Loader) {
+    FP.fini(*loader.pool);
+
+    free(loader);
+}
+
+load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene {
+    defer FP.reset(*loader.pool);
 
     scene: Scene;
 
@@ -120,7 +130,7 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
 
     absolute_path := gltf_path;
     if !is_absolute_path(gltf_path) {
-        absolute_path =, ok := get_absolute_path(gltf_path,, pool_allocator);
+        absolute_path =, ok := get_absolute_path(gltf_path,, loader.allocator);
         if !ok {
             return tprint(
                     "Failed to get absolute path for '%'",
@@ -130,7 +140,7 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
         }
     }
 
-    error, gltf := read_gltf(absolute_path,, pool_allocator);
+    error, gltf := read_gltf(absolute_path,, loader.allocator);
     if error {
         return error, scene;
     }
@@ -162,12 +172,12 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
             scene;
     }
 
-    root_path := path_strip_filename(absolute_path,, pool_allocator);
+    root_path := path_strip_filename(absolute_path,, loader.allocator);
 
     error =, loaded_gltf_buffers := load_gltf_buffers(
         gltf,
         root_path,,
-        pool_allocator
+        loader.allocator
     );
     if error {
         return error, scene;
@@ -199,6 +209,8 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
     return "", scene;
 }
 
+// Can be called even after GLTF_Loader was deinitialized.
+// Because scene outlives everything else here.
 release_scene :: (scene: *Scene) {
     free(scene.name);
 
@@ -420,5 +432,10 @@ is_supported_version :: (gltf: GLTF) -> bool {
 
     return ok;
 }
+
+#import "Basic";
+#import "File";
+#import "String";
+FP :: #import "Flat_Pool";
 
 #load "gltf_reader.jai";

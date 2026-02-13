@@ -3,6 +3,7 @@
     TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
 );
 #import "Compiler";
+GLTF :: #import,file "module.jai";
 
 #run {
     set_build_options_dc({
@@ -12,19 +13,34 @@
 
     setup_formatting();
 
-    test_test();
+    test_lantern();
+    test_mech();
 
     report_memory_leaks();
 }
 
-test_test :: () {
-    GLTF :: #import,file "module.jai";
+test_lantern :: () {
+    loader := GLTF.init();
+    defer GLTF.deinit(loader);
 
-    error, scene := GLTF.load_scene("assets/lantern/lantern.gltf");
+    error, scene := GLTF.load_scene(loader, "assets/lantern/lantern.gltf");
     assert(!error, error);
     defer GLTF.release_scene(*scene);
 
-    print("%\n", scene);
+    // @Incomplete
+
+    print("%\n", scene); // @ToBeDeleted
+}
+
+test_mech :: () {
+    loader := GLTF.init();
+    defer GLTF.deinit(loader);
+
+    error, scene := GLTF.load_scene(loader, "assets/mech/mech.gltf");
+    assert(!error, error);
+    defer GLTF.release_scene(*scene);
+
+    // @Incomplete
 }
 
 setup_formatting :: () {
