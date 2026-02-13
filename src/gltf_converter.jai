@@ -242,14 +242,16 @@ convert_gltf_primitive_into_mesh :: (
     if gltf_primitive._material != ABSENT {
         gltf_material := gltf.materials[gltf_primitive._material];
 
-        mesh.material = convert_gltf_material(gltf_material);
+        mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
     }
 
     return mesh;
 }
 
 convert_gltf_material :: (
+    gltf: GLTF,
     gltf_material: GLTF_Material,
+    root_path: string,
 ) -> Material {
     material: Material = {
         name = copy_string(gltf_material.name),
@@ -258,29 +260,98 @@ convert_gltf_material :: (
         alpha_cutoff = gltf_material.alpha_cutoff,
     };
 
+    // =========================================================================
+    // PBR Metallic Roughness
+    // =========================================================================
     material.pbr_metallic_roughness = {
         base_color_factor.component = gltf_material.pbr_metallic_roughness.base_color_factor,
         metallic_factor = gltf_material.pbr_metallic_roughness.metallic_factor,
         roughness_factor = gltf_material.pbr_metallic_roughness.roughness_factor,
-        // @Todo textures! @no_commit
     };
+    if gltf_material.pbr_metallic_roughness.base_color_texture._index != ABSENT {
+        gltf_texture := gltf.textures[gltf_material.pbr_metallic_roughness.base_color_texture._index];
 
+        material.pbr_metallic_roughness.base_color_texture = convert_gltf_texture(
+            gltf,
+            gltf_texture,
+            root_path,
+        );
+    }
+    if gltf_material.pbr_metallic_roughness.metallic_roughness_texture._index != ABSENT {
+        gltf_texture := gltf.textures[gltf_material.pbr_metallic_roughness.metallic_roughness_texture._index];
+
+        material.pbr_metallic_roughness.metallic_roughness_texture = convert_gltf_texture(
+            gltf,
+            gltf_texture,
+            root_path,
+        );
+    }
+
+    // =========================================================================
+    // Normal Map
+    // =========================================================================
     material.normal_texture = {
         scale = gltf_material.normal_texture.scale,
-        // @Todo textures! @no_commit
     };
+    if gltf_material.normal_texture._index != ABSENT {
+        gltf_texture := gltf.textures[gltf_material.normal_texture._index];
+
+        material.normal_texture.texture = convert_gltf_texture(
+            gltf,
+            gltf_texture,
+            root_path,
+        );
+    }
 
     material.occlusion_texture = {
         strength = gltf_material.occlusion_texture.strength,
-        // @Todo textures! @no_commit
     };
+    if gltf_material.occlusion_texture._index != ABSENT {
+        gltf_texture := gltf.textures[gltf_material.occlusion_texture._index];
+
+        material.occlusion_texture.texture = convert_gltf_texture(
+            gltf,
+            gltf_texture,
+            root_path,
+        );
+    }
 
     material.emissive_texture = {
         factor.component = gltf_material.emissive_factor,
-        // @Todo textures! @no_commit
     };
+    if gltf_material.emissive_texture._index != ABSENT {
+        gltf_texture := gltf.textures[gltf_material.emissive_texture._index];
+
+        material.emissive_texture.texture = convert_gltf_texture(
+            gltf,
+            gltf_texture,
+            root_path,
+        );
+    }
 
     return material;
+}
+
+convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> Material.Texture {
+    // @TODO: Use `tex_coord`!
+    assert(
+        gltf_texture._source != ABSENT,
+        "Got a texture '%', but it doesn't have a source",
+        gltf_texture.name,
+    );
+
+    gltf_image   := gltf.images[gltf_texture._source];
+    gltf_sampler := ifx gltf_texture._sampler != ABSENT
+        then gltf.samplers[gltf_texture._sampler]
+        else GLTF_Sampler.{};
+
+    return Material.Texture.{
+        image_path = path_join(root_path, gltf_image.uri),
+        mag_filter = gltf_sampler.mag_filter,
+        min_filter = gltf_sampler.min_filter,
+        wrap_s     = gltf_sampler.wrap_s,
+        wrap_t     = gltf_sampler.wrap_t,
+    };
 }
 
 extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {

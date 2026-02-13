@@ -21,10 +21,10 @@ GLTF :: #import,file "module.jai";
 
 test_lantern :: () {
     converter := GLTF.create_converter();
-    defer GLTF.destroy_converter(converter);
 
     error, scene := GLTF.load_scene(converter, "assets/lantern/lantern.gltf");
     assert(!error, error);
+    GLTF.destroy_converter(converter);
     defer GLTF.release_scene(*scene);
 
     // @Incomplete
