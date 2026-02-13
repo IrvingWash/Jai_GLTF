@@ -281,7 +281,114 @@ convert_gltf_primitive_into_mesh :: (
         }
     }
 
+    // =========================================================================
+    // Positions
+    // =========================================================================
+    if gltf_primitive.attributes._position != ABSENT {
+        gltf_accessor := gltf.accessors[gltf_primitive.attributes._position];
+
+        error, positions := parse_gltf_attribute(
+            gltf,
+            gltf_accessor,
+            loaded_gltf_buffers,
+            Vector3,
+        );
+
+        if error {
+            return error, mesh;
+        }
+
+        if gltf_accessor.max.count == 3 && gltf_accessor.min.count == 3 {
+            mesh.max_position = { gltf_accessor.max[0], gltf_accessor.max[1], gltf_accessor.max[2] };
+            mesh.min_position = { gltf_accessor.min[0], gltf_accessor.min[1], gltf_accessor.min[2] };
+        }
+
+        // @Incomplete
+    }
+
+    // =========================================================================
+    // Normals
+    // =========================================================================
+    if gltf_primitive.attributes._normal != ABSENT {
+        gltf_accessor := gltf.accessors[gltf_primitive.attributes._normal];
+
+        error, normals := parse_gltf_attribute(
+            gltf,
+            gltf_accessor,
+            loaded_gltf_buffers,
+            Vector3,
+        );
+
+        if error {
+            return error, mesh;
+        }
+        
+        // @Incomplete
+    }
+
+    // =========================================================================
+    // Texture coordinates
+    // =========================================================================
+    if gltf_primitive.attributes._texcoord_0 != ABSENT {
+        gltf_accessor := gltf.accessors[gltf_primitive.attributes._texcoord_0]; 
+
+        error, uvs := parse_gltf_attribute(
+            gltf,
+            gltf_accessor,
+            loaded_gltf_buffers,
+            Vector2,
+        );
+
+        if error {
+            return error, mesh;
+        }
+
+        // @Incomplete
+    }
+
     return "", mesh;
+}
+
+parse_gltf_attribute :: (
+    gltf: GLTF,
+    gltf_accessor: GLTF_Accessor,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
+    $Target_Type: Type,
+) -> error: string, [..]Target_Type
+#modify {
+    return Target_Type == Vector2 || Target_Type == Vector3 || IsScalar(Target_Type);
+}
+{
+    #if DO_SANITY_CHECKS {
+        #if Target_Type == {
+            case Vector2;
+                assert(
+                    gltf_accessor.type == .VEC2 && gltf_accessor.component_type == .FLOAT,
+                    "Wanted '%', but the attribute has '%'",
+                    Target_Type,
+                    gltf_accessor.type,
+                );
+            case Vector3;
+                assert(
+                    gltf_accessor.type == .VEC3 && gltf_accessor.component_type == .FLOAT,
+                    "Wanted '%', but the attribute has '%'",
+                    Target_Type,
+                    gltf_accessor.type,
+                );
+        }
+        if IsScalar(Target_Type) {
+            assert(
+                gltf_accessor.type == .SCALAR,
+                "Wanted '%', but the attribute has '%'",
+                Target_Type,
+                gltf_accessor.type,
+            );
+        }
+    }
+
+    result: [..]Target_Type;
+
+    return "", result;
 }
 
 parse_gltf_index_atttribute :: (
@@ -292,41 +399,32 @@ parse_gltf_index_atttribute :: (
 {
     result: [..]u32;
 
-    // =========================================================================
-    // Sanity checks
-    // =========================================================================
-    if gltf_accessor.type != .SCALAR {
-        return tprint(
-                "Got an indices attribute, but it's type is '%' instaed of a scalar",
-                gltf_accessor.type,
-            ),
-            result;
+    #if DO_SANITY_CHECKS {
+        assert(
+            gltf_accessor.type == .SCALAR,
+            "Got an indices attribute, but it's type is '%' instaed of a scalar",
+            gltf_accessor.type,
+        );
+
+        assert(
+            gltf.buffer_views[gltf_accessor._buffer_view].target == .ELEMENT_ARRAY_BUFFER,
+            "Expected '%' target for and index buffer view, but got '%'",
+            GLTF_Buffer_View.Target.ELEMENT_ARRAY_BUFFER,
+            gltf.buffer_views[gltf_accessor._buffer_view].target,
+        );
+
+        assert(
+            gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride == ABSENT,
+            "Expected indices buffer view to not have a byte stride, but got '%'",
+            gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride,
+        );
     }
+
     // We don't support sparse accessors, so...
     if gltf_accessor._buffer_view == ABSENT {
         return tprint(
                 "No buffer for an index attribute accessor '%'",
                 gltf_accessor.name,
-            ),
-            result;
-    }
-    if #complete gltf.buffer_views[gltf_accessor._buffer_view].target == {
-        case .UNKNOWN;
-            // Do nothing
-        case .ELEMENT_ARRAY_BUFFER;
-            // Do nothing
-        case .ARRAY_BUFFER;
-            return tprint(
-                    "Expected '%' target for and index buffer view, but got '%'",
-                    GLTF_Buffer_View.Target.ELEMENT_ARRAY_BUFFER,
-                    gltf.buffer_views[gltf_accessor._buffer_view].target,
-                ),
-                result;
-    }
-    if gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride != ABSENT {
-        return tprint(
-                "Expected indices buffer view to not have a byte stride, but got '%'",
-                gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride,
             ),
             result;
     }
@@ -339,16 +437,15 @@ parse_gltf_index_atttribute :: (
     index_type_byte_size := get_type_and_byte_size_from_gltf_component_type(
         gltf_accessor.component_type,
     );
-    if index_type != u16 && index_type != u32 {
-        return tprint(
-                "Expected type of indices be either u16 or u32, but got '%'",
-                index_type,
-            ),
-            result;
+    #if DO_SANITY_CHECKS {
+        assert(
+            index_type == u16 || index_type == u32,
+            "Expected type of indices be either u16 or u32, but got '%'",
+            index_type,
+        );
     }
 
     gltf_buffer_view := gltf.buffer_views[gltf_accessor._buffer_view];
-
     loaded_gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
 
     start_offset := gltf_accessor.byte_offset + gltf_buffer_view.byte_offset;
@@ -367,12 +464,7 @@ parse_gltf_index_atttribute :: (
         return "", result;
     }
 
-    // Otherwise, wi need to do some scary casting stuff.
-    assert(
-        index_type == u16,
-        "This shouldn't have happened. Expected index type to be u16, but got '%'",
-        index_type,
-    );
+    // Otherwise it's u16, we need to do some scary casting stuff.
 
     for 0..(gltf_accessor.count - 1) {
         index_into_buffer := start_offset + it * index_type_byte_size;
@@ -508,12 +600,12 @@ convert_gltf_material :: (
 convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> error: string, Material.Texture {
     texture: Material.Texture = ---;
 
-    if gltf_texture._source == ABSENT {
-        return tprint(
+    #if DO_SANITY_CHECKS {
+        assert(
+            gltf_texture._source != ABSENT,
             "Got a texture '%', but it doesn't have a source",
             gltf_texture.name,
-        ),
-        texture;
+        );
     }
 
     gltf_image   := gltf.images[gltf_texture._source];
@@ -585,10 +677,12 @@ extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
 Loaded_GLTF_Buffer :: #type,isa string;
 
 load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_GLTF_Buffer {
-    assert(
-        context.allocator.proc == FP.flat_pool_allocator_proc,
-        "This procedure expects to allocate into a pool allocator.",
-    );
+    #if DO_SANITY_CHECKS {
+        assert(
+            context.allocator.proc == FP.flat_pool_allocator_proc,
+            "This procedure expects to allocate into a pool allocator.",
+        );
+    }
 
     buffers: [..]Loaded_GLTF_Buffer;
 
