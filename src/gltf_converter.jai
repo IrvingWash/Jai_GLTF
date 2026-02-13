@@ -248,6 +248,10 @@ convert_gltf_primitive_into_mesh :: (
     root_path:           string,
     common_name:         string,
 ) -> error: string, Mesh {
+    #if DO_SANITY_CHECKS {
+        assert(gltf_primitive.attributes._position != ABSENT, "Primitive of mesh '%' has no position", common_name);
+    }
+
     mesh: Mesh = {
         name = copy_string(common_name),
         mode = gltf_primitive.mode,
@@ -284,7 +288,7 @@ convert_gltf_primitive_into_mesh :: (
     // =========================================================================
     // Positions
     // =========================================================================
-    if gltf_primitive.attributes._position != ABSENT {
+    {
         gltf_accessor := gltf.accessors[gltf_primitive.attributes._position];
 
         error, positions := parse_gltf_attribute(
@@ -298,12 +302,17 @@ convert_gltf_primitive_into_mesh :: (
             return error, mesh;
         }
 
+        array_resize(*mesh.vertices, positions.count);
+
         if gltf_accessor.max.count == 3 && gltf_accessor.min.count == 3 {
             mesh.max_position = { gltf_accessor.max[0], gltf_accessor.max[1], gltf_accessor.max[2] };
             mesh.min_position = { gltf_accessor.min[0], gltf_accessor.min[1], gltf_accessor.min[2] };
         }
 
-        // @Incomplete
+        for position: positions {
+            mesh.vertices[it_index].position = position;
+        }
+        array_free(positions);
     }
 
     // =========================================================================
@@ -322,8 +331,11 @@ convert_gltf_primitive_into_mesh :: (
         if error {
             return error, mesh;
         }
-        
-        // @Incomplete
+
+        for normal: normals {
+            mesh.vertices[it_index].normal = normal;
+        }
+        array_free(normals);
     }
 
     // =========================================================================
@@ -343,7 +355,10 @@ convert_gltf_primitive_into_mesh :: (
             return error, mesh;
         }
 
-        // @Incomplete
+        for uv: uvs {
+            mesh.vertices[it_index].uv = uv;
+        }
+        array_free(uvs);
     }
 
     return "", mesh;
@@ -384,9 +399,59 @@ parse_gltf_attribute :: (
                 gltf_accessor.type,
             );
         }
+
+        assert(
+            gltf_accessor.type == .VEC2
+            || gltf_accessor.type == .VEC3
+            || gltf_accessor.type == .SCALAR,
+        );
     }
 
     result: [..]Target_Type;
+
+    // @Todo we should actuall check if there is a sparse. If not - we don't error, just initialize this accessor with zeroes.
+    if gltf_accessor._buffer_view == ABSENT {
+        return tprint(
+                "No buffer view for accessor '%' (sparse is not supported)",
+                gltf_accessor.name,
+            ),
+            result;
+    }
+
+    _, type_byte_size := get_type_and_byte_size_from_gltf_component_type(gltf_accessor.component_type);
+
+    gltf_buffer_view := gltf.buffer_views[gltf_accessor._buffer_view];
+    loaded_gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
+
+    start_offset :=  gltf_accessor.byte_offset + gltf_buffer_view.byte_offset;
+    packed_stride := type_byte_size * get_component_count_per_container_from_accessor_type(gltf_accessor.type);
+
+    step := ifx gltf_buffer_view._byte_stride != ABSENT
+        then gltf_buffer_view._byte_stride
+        else packed_stride;
+
+    array_resize(*result, gltf_accessor.count);
+
+    // Data is tightly packed (not interleaved), so we can pull a memcpy
+    if step == packed_stride {
+        bytes_to_copy := gltf_accessor.count * step;
+        memcpy(
+            result.data,
+            loaded_gltf_buffer.data + start_offset,
+            bytes_to_copy,
+        );
+
+        return "", result;
+    }
+
+    // It's an interleaved buffer, going the long way.
+    for 0..(gltf_accessor.count - 1) {
+        index_into_buffer := start_offset + it * step;
+
+        pointer := cast(*Target_Type, loaded_gltf_buffer.data + index_into_buffer);
+
+        result[it] = cast(Target_Type, pointer.*);
+    }
 
     return "", result;
 }
@@ -398,6 +463,14 @@ parse_gltf_index_atttribute :: (
 ) -> error: string, [..]u32
 {
     result: [..]u32;
+
+    if gltf_accessor._buffer_view == ABSENT {
+        return tprint(
+                "No buffer view for accessor '%' (sparse is not supported)",
+                gltf_accessor.name,
+            ),
+            result;
+    }
 
     #if DO_SANITY_CHECKS {
         assert(
@@ -418,15 +491,6 @@ parse_gltf_index_atttribute :: (
             "Expected indices buffer view to not have a byte stride, but got '%'",
             gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride,
         );
-    }
-
-    // We don't support sparse accessors, so...
-    if gltf_accessor._buffer_view == ABSENT {
-        return tprint(
-                "No buffer for an index attribute accessor '%'",
-                gltf_accessor.name,
-            ),
-            result;
     }
 
     // =========================================================================
@@ -468,7 +532,9 @@ parse_gltf_index_atttribute :: (
 
     for 0..(gltf_accessor.count - 1) {
         index_into_buffer := start_offset + it * index_type_byte_size;
+
         pointer := cast(*u16, loaded_gltf_buffer.data + index_into_buffer);
+
         result[it] = cast(u32, pointer.*);
     }
 
@@ -711,6 +777,31 @@ get_gltf_primitives_count :: (gltf: GLTF) -> u32 {
     }
 
     return result;
+}
+
+get_component_count_per_container_from_accessor_type :: (accessor_type: GLTF_Accessor.Accessor_Type) -> u8 {
+    if #complete accessor_type == {
+        case .SCALAR;
+            return 1;
+        case .VEC2;
+            return 2;
+        case .VEC3;
+            return 3;
+        case .VEC4;
+            return 4;
+        case .MAT2;
+            return 4;
+        case .MAT3;
+            return 9;
+        case .MAT4;
+            return 16;
+        case .UNKNOWN;
+            assert(false, "Unknown accessor type '%'", accessor_type);
+    }
+
+    assert(false, "This should never happen");
+
+    return 0;
 }
 
 SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
