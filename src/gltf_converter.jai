@@ -323,6 +323,13 @@ parse_gltf_index_atttribute :: (
                 ),
                 result;
     }
+    if gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride != ABSENT {
+        return tprint(
+                "Expected indices buffer view to not have a byte stride, but got '%'",
+                gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride,
+            ),
+            result;
+    }
 
     // =========================================================================
     // Parsing
@@ -345,9 +352,6 @@ parse_gltf_index_atttribute :: (
     loaded_gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
 
     start_offset := gltf_accessor.byte_offset + gltf_buffer_view.byte_offset;
-    step := ifx gltf_buffer_view._byte_stride == ABSENT
-        then index_type_byte_size
-        else gltf_buffer_view._byte_stride;
 
     array_resize(*result, gltf_accessor.count);
 
@@ -358,21 +362,20 @@ parse_gltf_index_atttribute :: (
             loaded_gltf_buffer.data + start_offset,
             bytes_to_copy,
         );
-    } else {
-        for 0..(gltf_accessor.count - 1) {
-            index_into_buffer := start_offset + it * step;
 
-            if index_type == {
-                case u16;
-                    pointer := cast(*u16, loaded_gltf_buffer.data + index_into_buffer);
-                    result[it] = cast(u32, pointer.*);
-                case u32;
-                    pointer := cast(*u32, loaded_gltf_buffer.data + index_into_buffer);
-                    result[it] = pointer.*;
-                case;
-                    assert(false);
-            }
-        }
+        return "", result;
+    }
+
+    assert(
+        index_type == u16,
+        "This shouldn't have happened. Expected index type to be u16, but got '%'",
+        index_type,
+    );
+
+    for 0..(gltf_accessor.count - 1) {
+        index_into_buffer := start_offset + it * index_type_byte_size;
+        pointer := cast(*u16, loaded_gltf_buffer.data + index_into_buffer);
+        result[it] = cast(u32, pointer.*);
     }
 
     return "", result;

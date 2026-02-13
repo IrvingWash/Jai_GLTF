@@ -15,6 +15,7 @@ GLTF :: #import,file "module.jai";
 
     test_lantern();
     test_mech();
+    test_mccree();
 
     report_memory_leaks();
 }
@@ -28,8 +29,6 @@ test_lantern :: () {
     defer GLTF.release_scene(*scene);
 
     // @Incomplete
-
-    print("%\n", scene); // @ToBeDeleted
 }
 
 test_mech :: () {
@@ -41,6 +40,19 @@ test_mech :: () {
     defer GLTF.release_scene(*scene);
 
     // @Incomplete
+}
+
+test_mccree :: () {
+    converter := GLTF.create_converter();
+
+    error, scene := GLTF.load_scene(converter, "assets/mccree/scene.gltf");
+    assert(!error, error);
+    GLTF.destroy_converter(converter);
+    defer GLTF.release_scene(*scene);
+
+    // @Incomplete
+
+    print("%\n", scene);
 }
 
 setup_formatting :: () {
