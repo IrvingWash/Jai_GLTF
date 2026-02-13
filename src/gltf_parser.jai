@@ -390,7 +390,7 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
         absolute_buffer_path := path_join(root_path, gltf_buffer.uri);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
-            return tprint("Failed to read buffer from %", absolute_buffer_path),
+            return tprint("Failed to read buffer from '%'", absolute_buffer_path),
                 buffers;
         }
 
