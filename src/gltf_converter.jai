@@ -115,7 +115,7 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         if error {
             release_scene(*scene);
 
-            return error, scene;
+            return error, Scene.{};
         }
     }
 
@@ -292,14 +292,9 @@ parse_gltf_index_atttribute :: (
 {
     result: [..]u32;
 
-    if gltf_accessor._buffer_view == ABSENT {
-        return tprint(
-                "No buffer for an index attribute accessor '%'",
-                gltf_accessor.name,
-            ),
-            result;
-    }
-
+    // =========================================================================
+    // Sanity checks
+    // =========================================================================
     if gltf_accessor.type != .SCALAR {
         return tprint(
                 "Got an indices attribute, but it's type is '%' instaed of a scalar",
@@ -307,39 +302,104 @@ parse_gltf_index_atttribute :: (
             ),
             result;
     }
-
-    gltf_index_type: Type;
-    if #complete gltf_accessor.component_type == {
-        case .UNSIGNED_BYTE;
-            gltf_index_type = u8;
-        case .UNSIGNED_SHORT;
-            gltf_index_type = u16;
-        case .UNSIGNED_INT;
-            gltf_index_type = u32;
-        case .BYTE;  #through;
-        case .SHORT; #through;
-        case .FLOAT; #through;
+    // We don't support sparse accessors, so...
+    if gltf_accessor._buffer_view == ABSENT {
+        return tprint(
+                "No buffer for an index attribute accessor '%'",
+                gltf_accessor.name,
+            ),
+            result;
+    }
+    if #complete gltf.buffer_views[gltf_accessor._buffer_view].target == {
         case .UNKNOWN;
+            // Do nothing
+        case .ELEMENT_ARRAY_BUFFER;
+            // Do nothing
+        case .ARRAY_BUFFER;
             return tprint(
-                    "Incorrect component type in indices accessor '%'. Expected an unsigned type, but got '%'",
-                    gltf_accessor.name,
-                    gltf_accessor.component_type,
+                    "Expected '%' target for and index buffer view, but got '%'",
+                    GLTF_Buffer_View.Target.ELEMENT_ARRAY_BUFFER,
+                    gltf.buffer_views[gltf_accessor._buffer_view].target,
                 ),
                 result;
     }
 
-    array_reserve(*result, gltf_accessor.count);
+    // =========================================================================
+    // Parsing
+    // =========================================================================
 
+    index_type,
+    index_type_byte_size := get_type_and_byte_size_from_gltf_component_type(
+        gltf_accessor.component_type,
+    );
+    if index_type != u16 && index_type != u32 {
+        return tprint(
+                "Expected type of indices be either u16 or u32, but got '%'",
+                index_type,
+            ),
+            result;
+    }
 
-// GLTF_Accessor{
-//     _buffer_view = 39; 
-//     byte_offset = 0; 
-// }
+    gltf_buffer_view := gltf.buffer_views[gltf_accessor._buffer_view];
 
-    // @Incomplete
+    loaded_gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
+
+    start_offset := gltf_accessor.byte_offset + gltf_buffer_view.byte_offset;
+    step := ifx gltf_buffer_view._byte_stride == ABSENT
+        then index_type_byte_size
+        else gltf_buffer_view._byte_stride;
+
+    array_resize(*result, gltf_accessor.count);
+
+    if index_type == u32 {
+        bytes_to_copy := gltf_accessor.count * index_type_byte_size;
+        memcpy(
+            result.data,
+            loaded_gltf_buffer.data + start_offset,
+            bytes_to_copy,
+        );
+    } else {
+        for 0..(gltf_accessor.count - 1) {
+            index_into_buffer := start_offset + it * step;
+
+            if index_type == {
+                case u16;
+                    pointer := cast(*u16, loaded_gltf_buffer.data + index_into_buffer);
+                    result[it] = cast(u32, pointer.*);
+                case u32;
+                    pointer := cast(*u32, loaded_gltf_buffer.data + index_into_buffer);
+                    result[it] = pointer.*;
+                case;
+                    assert(false);
+            }
+        }
+    }
 
     return "", result;
 }
+
+get_type_and_byte_size_from_gltf_component_type :: (gltf_component_type: GLTF_Accessor.Component_Type) -> Type, u8 {
+    if #complete gltf_component_type == {
+        case .BYTE;
+            return s8, 1;
+        case .UNSIGNED_BYTE;
+            return u8, 1;
+        case .SHORT;
+            return s16, 2;
+        case .UNSIGNED_SHORT;
+            return u16, 2;
+        case .UNSIGNED_INT;
+            return u32, 4;
+        case .FLOAT;
+            return float32, 4;
+        case .UNKNOWN;
+            assert(false, "Invalid component type '%'", gltf_component_type);
+    }
+
+    assert(false, "This should never happen");
+    return u8, 1;
+}
+
 
 convert_gltf_material :: (
     gltf: GLTF,
