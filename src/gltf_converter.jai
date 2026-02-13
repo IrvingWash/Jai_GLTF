@@ -355,6 +355,7 @@ parse_gltf_index_atttribute :: (
 
     array_resize(*result, gltf_accessor.count);
 
+    // If GLTF data is u32 too, we can just copy the memory
     if index_type == u32 {
         bytes_to_copy := gltf_accessor.count * index_type_byte_size;
         memcpy(
@@ -366,6 +367,7 @@ parse_gltf_index_atttribute :: (
         return "", result;
     }
 
+    // Otherwise, wi need to do some scary casting stuff.
     assert(
         index_type == u16,
         "This shouldn't have happened. Expected index type to be u16, but got '%'",
