@@ -15,13 +15,17 @@ GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
     setup_formatting();
 
+    log("Jai_GLTF: Running tests");
+
     test_lantern();
     test_mech();
     test_mccree();
 
+    reset_temporary_storage();
+
     report_memory_leaks();
 
-    reset_temporary_storage();
+    log("Jai_GLTF: All tests passed, but check above if there were any leaks!");
 }
 
 test_lantern :: () {
@@ -39,24 +43,28 @@ test_lantern :: () {
 
 test_mech :: () {
     converter := GLTF.create_converter();
-    defer GLTF.destroy_converter(converter);
 
-    error, scene := GLTF.load_scene(converter, "assets/mech/mech.gltf");
+    model_path := path_join(#filepath, "assets/mech/mech.gltf",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
     assert(!error, error);
+    GLTF.destroy_converter(converter);
     defer GLTF.release_scene(*scene);
 
-    // @Incomplete
+    compare_scene_with_reference(model_path, scene);
 }
 
 test_mccree :: () {
     converter := GLTF.create_converter();
 
-    error, scene := GLTF.load_scene(converter, "assets/mccree/scene.gltf");
+    model_path := path_join(#filepath, "assets/mccree/scene.gltf",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
     assert(!error, error);
     GLTF.destroy_converter(converter);
     defer GLTF.release_scene(*scene);
 
-    // @Incomplete
+    compare_scene_with_reference(model_path, scene);
 }
 
 compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) {
@@ -65,17 +73,14 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) {
             path_strip_filename(model_path,, temp),
             "reference.txt",,
             temp
-        ),
+        ),,
+        temp,
     );
     assert(ok, "There is no reference file!");
-    defer free(expected);
-    expected_lines := split(expected, "\n");
-    defer array_free(expected_lines);
+    expected_lines := split(expected, "\n",, temp);
 
-    actual := sprint("%", scene);
-    defer free(actual);
-    actual_lines := split(actual, "\n");
-    defer array_free(actual_lines);
+    actual := tprint("%", scene);
+    actual_lines := split(actual, "\n",, temp);
 
     assert(
         expected_lines.count == actual_lines.count,
