@@ -245,6 +245,14 @@ convert_gltf_primitive_into_mesh :: (
         mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
     }
 
+    /*
+    @Todo:
+        vertices: [..]Vertex;
+        indices:  [..]u32;
+        min_position: Vector3;
+        max_position: Vector3;
+    */
+
     return mesh;
 }
 
@@ -333,7 +341,6 @@ convert_gltf_material :: (
 }
 
 convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> Material.Texture {
-    // @TODO: Use `tex_coord`!
     assert(
         gltf_texture._source != ABSENT,
         "Got a texture '%', but it doesn't have a source",
