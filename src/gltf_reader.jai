@@ -4,18 +4,6 @@ No manipulations are applied at all.
 Everything here is meant for internal use.
 */
 
-/*
-@Todo support `sparse` field in `GLTF_Accessor`
-@Todo support `animations`
-@Todo support `cameras`
-@Todo support `weights` in `GLTF_Mesh`
-@Todo support `targets` in `GLTF_Mesh.Primitive`
-@Todo support `camera` in `GLTF_Node`
-@Todo support `skin` in `GLTF_Node`
-@Todo support `weights` in `GLTF_Node`
-@Todo support `skins`
-*/
-
 #scope_module
 
 GLTF :: struct {

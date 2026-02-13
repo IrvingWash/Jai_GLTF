@@ -1,14 +1,13 @@
 # Jai GLTF
 
-## This is a work in progress!
-
 This is a simple module for loading `.gltf` files into a `Scene` which is friendly for rendering applications.<br>
 Only `.gltf` files are supported (no `.glb`).
 
-This module is meant to be used to load models into game engines, so:
-- Extensions are not supported.
-- Cameras are not supported.
-- Animations are not supported (but it's a top priority to bring them in).
+Currently the following features are not supported:
+- Sparse accessors
+- Extensions
+- Cameras
+- Animations and anything related to them (weights, morph targets, etc)
 
 ## Usage and API
 
@@ -17,10 +16,15 @@ Simply clone/copy/add as a submodule this repo into your `project_name/modules/`
 There are only two procederus.
 
 ```jai
-load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene;
+create_converter :: () -> *GLTF_Converter;
+destroy_converter :: (converter: *GLTF_Converter);
+
+load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> ok: bool, error: string, Scene;
 
 release_scene :: (scene: *Scene);
 ```
+
+Scene outlives the converter. The converter is needed only to call load_scene and can be immetiately released afterwards.
 
 ## Develompent
 
@@ -43,12 +47,29 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
     Contains all the source files with the GLTF parsing logic. Jai files in other places are used only for develompent.
 - `src/gltf_reader.jai`
     This file parser JSON (`.gltf`) into Jai types without transforming any of the data.<br>
-    As Jai has zero-initialization, optinoal GLTF fields have sentinels. All the fields that have sentinels are prefixed with `_`.
-- `src/gltf_parser.jai`
+    As Jai has zero-initialization, optional GLTF fields have sentinels. All the fields that have sentinels are prefixed with `_`.
+- `src/gltf_converter.jai`
     Here we convert GTF into a `Scene`.
+- `src/scene.jai`
+    Here we have the definition of `Scene`.
 - `test.jai`
     Runs simple tests.
-- `tests/`
+- `assets/`
     Contains `.gltf` files for testing.
 - `modules/`
     Contains third party dependencies.
+
+## Todo
+
+- Make tests work faster - at least stop using ultra formatted output
+- Try to move DO_SANITY_CHECK stuff into a standalone validator procedure
+- Stop returning an error if an attribute doesn't have a buffer view and if it doesn't have a sparse. Use zero-initialized attribute
+- Support sparse accessors (`sparse` field in `GLTF_Accessor`)
+- Support animations (`animations`)
+- Support `weights` in `GLTF_Mesh`
+- Support `targets` in `GLTF_Mesh.Primitive`
+- Support `skin` in `GLTF_Node`
+- Support `weights` in `GLTF_Node`
+- Support `skins`
+- Support cameras `cameras`
+- Support `camera` in `GLTF_Node`
