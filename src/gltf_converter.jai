@@ -26,6 +26,8 @@ destroy_converter :: (converter: *GLTF_Converter) {
 
 // Only the scene is allocated by the default allocator in this procedure.
 // Everything else's lifetimes are locked to the procedure's body by applying a pool allocator.
+// If an error is returned - the scene is corrupted and should not be used.
+// In such a case, the scene is released here, so if error != "", you don't need to do anything with the scene.
 load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, Scene {
     defer FP.reset(*converter.pool);
 
@@ -103,13 +105,18 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
     array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
 
     for gltf_node_index: gltf_scene.nodes {
-        convert_gltf_node(
+        error := convert_gltf_node(
             gltf,
             gltf_node_index,
             *scene,
             loaded_gltf_buffers,
             root_path,
         );
+        if error {
+            release_scene(*scene);
+
+            return error, scene;
+        }
     }
 
     return "", scene;
@@ -158,7 +165,7 @@ convert_gltf_node :: (
     loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path:           string,
     parent_node_index:   s32                   = ABSENT,
-) -> converted_node_index: s32 {
+) -> error: string, converted_node_index: s32 {
     gltf_node := gltf.nodes[gltf_node_index];
 
     node: Node = {
@@ -181,16 +188,22 @@ convert_gltf_node :: (
         common_name := gltf_mesh.name;
 
         for gltf_primitive: gltf_mesh.primitives {
+            error, mesh := convert_gltf_primitive_into_mesh(
+                gltf,
+                gltf_primitive,
+                loaded_gltf_buffers,
+                root_path,
+                common_name,
+            );
+
             array_add(
                 *scene.meshes,
-                convert_gltf_primitive_into_mesh(
-                    gltf,
-                    gltf_primitive,
-                    loaded_gltf_buffers,
-                    root_path,
-                    common_name,
-                ),
+                mesh,
             );
+
+            if error {
+                return error, -1;
+            }
         }
     }
 
@@ -206,7 +219,7 @@ convert_gltf_node :: (
     current_node_index := scene.nodes.count - 1;
 
     for gltf_child_index: gltf_node.children {
-        converted_node_index := convert_gltf_node(
+        error, converted_node_index := convert_gltf_node(
             gltf,
             gltf_child_index,
             scene,
@@ -215,13 +228,17 @@ convert_gltf_node :: (
             cast(s32, current_node_index),
         );
 
+        if error {
+            return error, cast(s32, current_node_index);
+        }
+
         array_add(
             *scene.nodes[current_node_index].children_indices,
             converted_node_index
         );
     }
 
-    return cast(s32, current_node_index);
+    return "", cast(s32, current_node_index);
 }
 
 convert_gltf_primitive_into_mesh :: (
@@ -230,7 +247,7 @@ convert_gltf_primitive_into_mesh :: (
     loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path:           string,
     common_name:         string,
-) -> Mesh {
+) -> error: string, Mesh {
     mesh: Mesh = {
         name = copy_string(common_name),
         mode = gltf_primitive.mode,
@@ -242,7 +259,10 @@ convert_gltf_primitive_into_mesh :: (
     if gltf_primitive._material != ABSENT {
         gltf_material := gltf.materials[gltf_primitive._material];
 
-        mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
+        error:, mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
+        if error {
+            return error, mesh;
+        }
     }
 
     // =========================================================================
@@ -251,22 +271,42 @@ convert_gltf_primitive_into_mesh :: (
     if gltf_primitive._indices != ABSENT {
         gltf_accessor := gltf.accessors[gltf_primitive._indices];
 
-        mesh.indices = parse_gltf_index_atttribute(gltf, gltf_accessor);
+        error:, mesh.indices = parse_gltf_index_atttribute(
+            gltf,
+            gltf_accessor,
+            loaded_gltf_buffers,
+        );
+        if error {
+            return error, mesh;
+        }
     }
 
-    return mesh;
+    return "", mesh;
 }
 
 parse_gltf_index_atttribute :: (
     gltf: GLTF,
     gltf_accessor: GLTF_Accessor,
-) -> [..]u32
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
+) -> error: string, [..]u32
 {
-    assert(
-        gltf_accessor.type == .SCALAR,
-        "Got an indices attribute, but it's type is '%' instaed of a scalar",
-        gltf_accessor.type,
-    );
+    result: [..]u32;
+
+    if gltf_accessor._buffer_view == ABSENT {
+        return tprint(
+                "No buffer for an index attribute accessor '%'",
+                gltf_accessor.name,
+            ),
+            result;
+    }
+
+    if gltf_accessor.type != .SCALAR {
+        return tprint(
+                "Got an indices attribute, but it's type is '%' instaed of a scalar",
+                gltf_accessor.type,
+            ),
+            result;
+    }
 
     gltf_index_type: Type;
     if #complete gltf_accessor.component_type == {
@@ -280,27 +320,32 @@ parse_gltf_index_atttribute :: (
         case .SHORT; #through;
         case .FLOAT; #through;
         case .UNKNOWN;
-            assert(
-                false,
-                "Incorrect component type in indices accessor '%'. Expected an unsigned type, but got '%'",
-                gltf_accessor.name,
-                gltf_accessor.component_type,
-            );
+            return tprint(
+                    "Incorrect component type in indices accessor '%'. Expected an unsigned type, but got '%'",
+                    gltf_accessor.name,
+                    gltf_accessor.component_type,
+                ),
+                result;
     }
 
-    result: [..]u32;
     array_reserve(*result, gltf_accessor.count);
+
+
+// GLTF_Accessor{
+//     _buffer_view = 39; 
+//     byte_offset = 0; 
+// }
 
     // @Incomplete
 
-    return result;
+    return "", result;
 }
 
 convert_gltf_material :: (
     gltf: GLTF,
     gltf_material: GLTF_Material,
     root_path: string,
-) -> Material {
+) -> error: string, Material {
     material: Material = {
         name = copy_string(gltf_material.name),
         double_sided = gltf_material.double_sided,
@@ -319,20 +364,26 @@ convert_gltf_material :: (
     if gltf_material.pbr_metallic_roughness.base_color_texture._index != ABSENT {
         gltf_texture := gltf.textures[gltf_material.pbr_metallic_roughness.base_color_texture._index];
 
-        material.pbr_metallic_roughness.base_color_texture = convert_gltf_texture(
+        error:, material.pbr_metallic_roughness.base_color_texture = convert_gltf_texture(
             gltf,
             gltf_texture,
             root_path,
         );
+        if error {
+            return error, material;
+        }
     }
     if gltf_material.pbr_metallic_roughness.metallic_roughness_texture._index != ABSENT {
         gltf_texture := gltf.textures[gltf_material.pbr_metallic_roughness.metallic_roughness_texture._index];
 
-        material.pbr_metallic_roughness.metallic_roughness_texture = convert_gltf_texture(
+        error:, material.pbr_metallic_roughness.metallic_roughness_texture = convert_gltf_texture(
             gltf,
             gltf_texture,
             root_path,
         );
+        if error {
+            return error, material;
+        }
     }
 
     // =========================================================================
@@ -344,11 +395,14 @@ convert_gltf_material :: (
     if gltf_material.normal_texture._index != ABSENT {
         gltf_texture := gltf.textures[gltf_material.normal_texture._index];
 
-        material.normal_texture.texture = convert_gltf_texture(
+        error:, material.normal_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
             root_path,
         );
+        if error {
+            return error, material;
+        }
     }
 
     material.occlusion_texture = {
@@ -357,11 +411,14 @@ convert_gltf_material :: (
     if gltf_material.occlusion_texture._index != ABSENT {
         gltf_texture := gltf.textures[gltf_material.occlusion_texture._index];
 
-        material.occlusion_texture.texture = convert_gltf_texture(
+        error:, material.occlusion_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
             root_path,
         );
+        if error {
+            return error, material;
+        }
     }
 
     material.emissive_texture = {
@@ -370,35 +427,44 @@ convert_gltf_material :: (
     if gltf_material.emissive_texture._index != ABSENT {
         gltf_texture := gltf.textures[gltf_material.emissive_texture._index];
 
-        material.emissive_texture.texture = convert_gltf_texture(
+        error:, material.emissive_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
             root_path,
         );
+        if error {
+            return error, material;
+        }
     }
 
-    return material;
+    return "", material;
 }
 
-convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> Material.Texture {
-    assert(
-        gltf_texture._source != ABSENT,
-        "Got a texture '%', but it doesn't have a source",
-        gltf_texture.name,
-    );
+convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> error: string, Material.Texture {
+    texture: Material.Texture = ---;
+
+    if gltf_texture._source == ABSENT {
+        return tprint(
+            "Got a texture '%', but it doesn't have a source",
+            gltf_texture.name,
+        ),
+        texture;
+    }
 
     gltf_image   := gltf.images[gltf_texture._source];
     gltf_sampler := ifx gltf_texture._sampler != ABSENT
         then gltf.samplers[gltf_texture._sampler]
         else GLTF_Sampler.{};
 
-    return Material.Texture.{
+    texture = {
         image_path = path_join(root_path, gltf_image.uri),
         mag_filter = gltf_sampler.mag_filter,
         min_filter = gltf_sampler.min_filter,
         wrap_s     = gltf_sampler.wrap_s,
         wrap_t     = gltf_sampler.wrap_t,
     };
+
+    return "", texture;
 }
 
 extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
