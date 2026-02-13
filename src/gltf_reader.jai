@@ -41,20 +41,22 @@ GLTF :: struct {
     The pool allocator will be reset by the caller.
 */
 read_gltf :: (path: string) -> error: string, GLTF {
-    /*
-        Just sanity checks.
-        We call this procedure only from a single place which passes an absolute path
-        and a pool allocator.
-    */
-    assert(
-        context.allocator.proc == FP.flat_pool_allocator_proc,
-        "This function can be used only with the Flat_Pool allocator.",
-    );
-    assert(
-        is_absolute_path(path),
-        "Path '%' is not an absolute path",
-        path,
-    );
+    #if DO_SANITY_CHECKS {
+        /*
+            Just sanity checks.
+            We call this procedure only from a single place which passes an absolute path
+            and a pool allocator.
+        */
+        assert(
+            context.allocator.proc == FP.flat_pool_allocator_proc,
+            "This function can be used only with the Flat_Pool allocator.",
+        );
+        assert(
+            is_absolute_path(path),
+            "Path '%' is not an absolute path",
+            path,
+        );
+    }
 
     ok, gltf := json_parse_file(path, GLTF);
     if !ok {

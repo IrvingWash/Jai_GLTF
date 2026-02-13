@@ -3,7 +3,7 @@
     TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
 );
 #import "Compiler";
-GLTF :: #import,file "module.jai";
+GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
 #run {
     set_build_options_dc({
