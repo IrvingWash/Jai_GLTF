@@ -20,10 +20,10 @@ GLTF :: #import,file "module.jai";
 }
 
 test_lantern :: () {
-    loader := GLTF.init();
-    defer GLTF.deinit(loader);
+    converter := GLTF.create_converter();
+    defer GLTF.destroy_converter(converter);
 
-    error, scene := GLTF.load_scene(loader, "assets/lantern/lantern.gltf");
+    error, scene := GLTF.load_scene(converter, "assets/lantern/lantern.gltf");
     assert(!error, error);
     defer GLTF.release_scene(*scene);
 
@@ -33,10 +33,10 @@ test_lantern :: () {
 }
 
 test_mech :: () {
-    loader := GLTF.init();
-    defer GLTF.deinit(loader);
+    converter := GLTF.create_converter();
+    defer GLTF.destroy_converter(converter);
 
-    error, scene := GLTF.load_scene(loader, "assets/mech/mech.gltf");
+    error, scene := GLTF.load_scene(converter, "assets/mech/mech.gltf");
     assert(!error, error);
     defer GLTF.release_scene(*scene);
 

@@ -1,126 +1,33 @@
-/*
-    This file parses a `.gltf` file into a `Scene`.
-    The `Scene` is meant to be consumable into a rendering application.
-*/
-
-Scene :: struct {
-    name:   string;
-
-    nodes:  [..]Node;
-    meshes: [..]Mesh;
-}
-
-Node :: struct {
-    name: string;
-
-    parent_index:     s32      = ABSENT;
-    children_indices: [..]s32;
-
-    first_mesh_index: s32 = ABSENT;
-    mesh_count:       s32;
-
-    local_transform: Matrix4 = Matrix4_Identity; // Row-major
-}
-
-// We map GLTF primitives to meshes, as having the separation between a mesh and its primitives doesn't make a lot of sense for me.
-Mesh :: struct {
-    name: string;
-
-    vertices: [..]Vertex;
-    indices:  [..]u32;
-    mode:     Mode = .TRIANGLES;
-
-    material: Material;
-
-    min_position: Vector3;
-    max_position: Vector3;
-
-    Mode :: GLTF_Mesh.Primitive.Mode;
-}
-
-Vertex :: struct {
-    position: Vector3;
-    normal:   Vector3 = { 0, 0, 1 };
-    uv:       Vector2;
-}
-
-Material :: struct {
-    name: string;
-
-    double_sided: bool;
-    alpha_mode:   Alpha_Mode = .OPAQUE;
-    alpha_cutoff: float      = 0.5;
-
-    pbr_metallic_roughness: PBR_Metallic_Roughness;
-    normal_texture:         Normal_Texture;
-    occlusion_texture:      Occlusion_Texture;
-    emissive_texture:       Emissive_Texture;
-
-    Alpha_Mode :: #type GLTF_Material.Alpha_Mode;
-
-    PBR_Metallic_Roughness :: struct {
-        base_color_factor:  Vector4 = { 1, 1, 1, 1 };
-        base_color_texture: Texture;
-
-        metallic_factor:            float    = 1;
-        roughness_factor:           float    = 1;
-        metallic_roughness_texture: Texture;
-    }
-
-    Normal_Texture :: struct {
-        scale:   float    = 1;
-        texture: Texture;
-    }
-
-    Occlusion_Texture :: struct {
-        strength: float    = 1;
-        texture:  Texture;
-    }
-
-    Emissive_Texture :: struct {
-        factor:  Vector3;
-        texture: Texture;
-    }
-
-    Texture :: struct {
-        image_path: string;
-
-        mag_filter: Mag_Filter = .UNKNOWN;
-        min_filter: Min_Filter = .UNKNOWN;
-        wrap_s:     Wrap_Mode  = .REPEAT;
-        wrap_t:     Wrap_Mode  = .REPEAT;
-
-        Mag_Filter :: #type GLTF_Sampler.Mag_Filter;
-        Min_Filter :: #type GLTF_Sampler.Min_Filter;
-        Wrap_Mode  :: #type GLTF_Sampler.Wrap_Mode;
-    }
-}
-
 // If multithreading, use one loader per thread. Which means call init once per thread.
-GLTF_Loader :: struct {
+GLTF_Converter :: struct {
     pool: FP.Flat_Pool;
     allocator: Allocator;
 }
 
-init :: () -> *GLTF_Loader {
-    loader := New(GLTF_Loader);
+// Don't use the same converter in different threads.
+create_converter :: () -> *GLTF_Converter {
+    converter := New(GLTF_Converter);
 
-    loader.allocator = {
+    converter.allocator = {
         proc = FP.flat_pool_allocator_proc,
-        data = *loader.pool,
+        data = *converter.pool,
     };
 
-    return loader;
+    return converter;
 }
 
-deinit :: (loader: *GLTF_Loader) {
-    FP.fini(*loader.pool);
+// Destroying the converter leaves the loaded scenes intact!
+// Because converters are needed only for conversion. You might want your scene to outlive the converter.
+destroy_converter :: (converter: *GLTF_Converter) {
+    FP.fini(*converter.pool);
 
-    free(loader);
+    free(converter);
 }
 
-load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene {
-    defer FP.reset(*loader.pool);
+// Only the scene is allocated by the default allocator in this procedure.
+// Everything else's lifetimes are locked to the procedure's body by applying a pool allocator.
+load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, Scene {
+    defer FP.reset(*converter.pool);
 
     scene: Scene;
 
@@ -130,7 +37,7 @@ load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene 
 
     absolute_path := gltf_path;
     if !is_absolute_path(gltf_path) {
-        absolute_path =, ok := get_absolute_path(gltf_path,, loader.allocator);
+        absolute_path =, ok := get_absolute_path(gltf_path,, converter.allocator);
         if !ok {
             return tprint(
                     "Failed to get absolute path for '%'",
@@ -140,7 +47,7 @@ load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene 
         }
     }
 
-    error, gltf := read_gltf(absolute_path,, loader.allocator);
+    error, gltf := read_gltf(absolute_path,, converter.allocator);
     if error {
         return error, scene;
     }
@@ -172,19 +79,19 @@ load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene 
             scene;
     }
 
-    root_path := path_strip_filename(absolute_path,, loader.allocator);
+    root_path := path_strip_filename(absolute_path,, converter.allocator);
 
     error =, loaded_gltf_buffers := load_gltf_buffers(
         gltf,
         root_path,,
-        loader.allocator
+        converter.allocator
     );
     if error {
         return error, scene;
     }
 
     // =========================================================================
-    // Parsing
+    // Converting
     // =========================================================================
 
     gltf_scene := gltf.scenes[gltf._scene];
@@ -195,9 +102,8 @@ load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene 
     array_reserve(*scene.nodes, gltf.nodes.count);
     array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
 
-    // Parsing the nodes and everything inside them
     for gltf_node_index: gltf_scene.nodes {
-        parse_gltf_node(
+        convert_gltf_node(
             gltf,
             gltf_node_index,
             *scene,
@@ -209,8 +115,8 @@ load_scene :: (loader: *GLTF_Loader, gltf_path: string) -> error: string, Scene 
     return "", scene;
 }
 
-// Can be called even after GLTF_Loader was deinitialized.
-// Because scene outlives everything else here.
+// Should be called even after GLTF_Converter was destroyed.
+// Scene's lifetime and GLTF_Converters lifetime are orthogonal.
 release_scene :: (scene: *Scene) {
     free(scene.name);
 
@@ -239,26 +145,20 @@ release_scene :: (scene: *Scene) {
 
 
 
-#scope_module
-
-ABSENT: s32 : -1;
-
-
-
 #scope_file
 
 /*
 gltf_node_index is used to subscript the list of nodes from the GLTF file.
-Other indexes, without the "gltf" prefix/postfix are used to subscript the scene.
+Other indexes, without "gltf" in the name, are used to subscript the scene.
 */
-parse_gltf_node :: (
+convert_gltf_node :: (
     gltf:                GLTF,
     gltf_node_index:     s32,
     scene:               *Scene,
     loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path:           string,
     parent_node_index:   s32                   = ABSENT,
-) -> parsed_node_index: s32 {
+) -> converted_node_index: s32 {
     gltf_node := gltf.nodes[gltf_node_index];
 
     node: Node = {
@@ -268,7 +168,7 @@ parse_gltf_node :: (
     };
 
     // =========================================================================
-    // Parsing meshes (primitives)
+    // Converting meshes (primitives)
     // =========================================================================
     if gltf_node._mesh != ABSENT {
         gltf_mesh := gltf.meshes[gltf_node._mesh];
@@ -283,7 +183,7 @@ parse_gltf_node :: (
         for gltf_primitive: gltf_mesh.primitives {
             array_add(
                 *scene.meshes,
-                parse_gltf_primitive(
+                convert_gltf_primitive_into_mesh(
                     gltf,
                     gltf_primitive,
                     loaded_gltf_buffers,
@@ -296,17 +196,17 @@ parse_gltf_node :: (
 
     // At this point we have filled all the info for the node except it's children
     // It would be more readable if we added the node into the scene at the end of this procedure,
-    // when we added the children into the node.
-    // But that doesn't work because we can correctly get the index of this node inside the scene only now, before parsing child nodes.
+    // after we added the children into the node.
+    // But that wouldn't work because we can correctly get the index of this node inside the scene only right now, before converting child nodes.
     array_add(*scene.nodes, node);
 
     // =========================================================================
-    // Parsing children
+    // Converting children
     // =========================================================================
     current_node_index := scene.nodes.count - 1;
 
     for gltf_child_index: gltf_node.children {
-        parsed_node_index := parse_gltf_node(
+        converted_node_index := convert_gltf_node(
             gltf,
             gltf_child_index,
             scene,
@@ -317,25 +217,70 @@ parse_gltf_node :: (
 
         array_add(
             *scene.nodes[current_node_index].children_indices,
-            parsed_node_index
+            converted_node_index
         );
     }
 
     return cast(s32, current_node_index);
 }
 
-parse_gltf_primitive :: (
+convert_gltf_primitive_into_mesh :: (
     gltf:                GLTF,
     gltf_primitive:      GLTF_Mesh.Primitive,
     loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path:           string,
     common_name:         string,
 ) -> Mesh {
-    mesh: Mesh;
+    mesh: Mesh = {
+        name = copy_string(common_name),
+        mode = gltf_primitive.mode,
+    };
 
-    // @Incomplete
+    // =========================================================================
+    // Material
+    // =========================================================================
+    if gltf_primitive._material != ABSENT {
+        gltf_material := gltf.materials[gltf_primitive._material];
+
+        mesh.material = convert_gltf_material(gltf_material);
+    }
 
     return mesh;
+}
+
+convert_gltf_material :: (
+    gltf_material: GLTF_Material,
+) -> Material {
+    material: Material = {
+        name = copy_string(gltf_material.name),
+        double_sided = gltf_material.double_sided,
+        alpha_mode = gltf_material.alpha_mode,
+        alpha_cutoff = gltf_material.alpha_cutoff,
+    };
+
+    material.pbr_metallic_roughness = {
+        base_color_factor.component = gltf_material.pbr_metallic_roughness.base_color_factor,
+        metallic_factor = gltf_material.pbr_metallic_roughness.metallic_factor,
+        roughness_factor = gltf_material.pbr_metallic_roughness.roughness_factor,
+        // @Todo textures! @no_commit
+    };
+
+    material.normal_texture = {
+        scale = gltf_material.normal_texture.scale,
+        // @Todo textures! @no_commit
+    };
+
+    material.occlusion_texture = {
+        strength = gltf_material.occlusion_texture.strength,
+        // @Todo textures! @no_commit
+    };
+
+    material.emissive_texture = {
+        factor.component = gltf_material.emissive_factor,
+        // @Todo textures! @no_commit
+    };
+
+    return material;
 }
 
 extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {

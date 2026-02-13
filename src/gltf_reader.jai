@@ -38,7 +38,7 @@ GLTF :: struct {
 /*
     This procedure is called from a single place with a pool alloctor.
     We don't need to free anything here.
-    The pool allocator will be released by the caller.
+    The pool allocator will be reset by the caller.
 */
 read_gltf :: (path: string) -> error: string, GLTF {
     /*

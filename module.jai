@@ -10,4 +10,11 @@ release_scene :: (scene: *Scene);
 The `Scene` itself is defined in "./src/gltf_parser.jai".
 */
 
-#load "src/gltf_parser.jai";
+#load "src/scene.jai";
+#load "src/gltf_converter.jai";
+
+
+
+#scope_module
+
+ABSENT: s32 : -1;
