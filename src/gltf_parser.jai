@@ -184,6 +184,7 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
     array_reserve(*scene.nodes, gltf.nodes.count);
     array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
 
+    // Parsing the nodes and everything inside them
     for gltf_node_index: gltf_scene.nodes {
         parse_gltf_node(
             gltf,
@@ -248,6 +249,9 @@ parse_gltf_node :: (
     };
 
     // At this point we have filled all the info for the node except it's children
+    // It would be more readable if we added the node into the scene at the end of this procedure,
+    // when we added the children into the node.
+    // But that doesn't work because we can correctly get the index of this node inside the scene only now, before parsing child nodes.
     array_add(*scene.nodes, node);
 
     current_node_index := scene.nodes.count - 1;
