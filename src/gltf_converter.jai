@@ -245,15 +245,55 @@ convert_gltf_primitive_into_mesh :: (
         mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
     }
 
-    /*
-    @Todo:
-        vertices: [..]Vertex;
-        indices:  [..]u32;
-        min_position: Vector3;
-        max_position: Vector3;
-    */
+    // =========================================================================
+    // Indices
+    // =========================================================================
+    if gltf_primitive._indices != ABSENT {
+        gltf_accessor := gltf.accessors[gltf_primitive._indices];
+
+        mesh.indices = parse_gltf_index_atttribute(gltf, gltf_accessor);
+    }
 
     return mesh;
+}
+
+parse_gltf_index_atttribute :: (
+    gltf: GLTF,
+    gltf_accessor: GLTF_Accessor,
+) -> [..]u32
+{
+    assert(
+        gltf_accessor.type == .SCALAR,
+        "Got an indices attribute, but it's type is '%' instaed of a scalar",
+        gltf_accessor.type,
+    );
+
+    gltf_index_type: Type;
+    if #complete gltf_accessor.component_type == {
+        case .UNSIGNED_BYTE;
+            gltf_index_type = u8;
+        case .UNSIGNED_SHORT;
+            gltf_index_type = u16;
+        case .UNSIGNED_INT;
+            gltf_index_type = u32;
+        case .BYTE;  #through;
+        case .SHORT; #through;
+        case .FLOAT; #through;
+        case .UNKNOWN;
+            assert(
+                false,
+                "Incorrect component type in indices accessor '%'. Expected an unsigned type, but got '%'",
+                gltf_accessor.name,
+                gltf_accessor.component_type,
+            );
+    }
+
+    result: [..]u32;
+    array_reserve(*result, gltf_accessor.count);
+
+    // @Incomplete
+
+    return result;
 }
 
 convert_gltf_material :: (

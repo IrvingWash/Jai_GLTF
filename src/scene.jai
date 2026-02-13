@@ -30,6 +30,7 @@ Mesh :: struct {
 
     vertices: [..]Vertex;
     // Only u32, sorry!
+    // If count is 0 - use a non-indexed draw call
     indices:  [..]u32;
     mode:     Mode = .TRIANGLES;
 
