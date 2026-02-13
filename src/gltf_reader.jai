@@ -190,6 +190,7 @@ GLTF_Mesh :: struct {
             _position:   s32 = ABSENT; @JsonName(POSITION)
             _normal:     s32 = ABSENT; @JsonName(NORMAL)
             _texcoord_0: s32 = ABSENT; @JsonName(TEXCOORD_0)
+            // @Todo: support TEXCOORD_N
         }
 
         Mode :: enum s32 #specified {
