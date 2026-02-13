@@ -5,6 +5,7 @@
 #import "Compiler";
 #import "String";
 #import "File";
+#import "Print_Color";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
 #run {
@@ -15,17 +16,17 @@ GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
     setup_formatting();
 
-    log("Jai_GLTF: Running tests");
+    print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
 
     test_lantern();
     test_mech();
     test_mccree();
 
+    print_color("Jai_GLTF: All tests finished\n", color = .YELLOW, style = .BOLD);
+
     reset_temporary_storage();
 
     report_memory_leaks();
-
-    log("Jai_GLTF: All tests passed, but check above if there were any leaks!");
 }
 
 test_lantern :: () {
@@ -34,8 +35,12 @@ test_lantern :: () {
     model_path := path_join(#filepath, "assets/lantern/lantern.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
-    assert(!error, error);
     GLTF.destroy_converter(converter);
+
+    if !expect(error, "", error) {
+        return;
+    }
+
     defer GLTF.release_scene(*scene);
 
     compare_scene_with_reference(model_path, scene);
@@ -47,8 +52,12 @@ test_mech :: () {
     model_path := path_join(#filepath, "assets/mech/mech.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
-    assert(!error, error);
     GLTF.destroy_converter(converter);
+
+    if !expect(error, "", error) {
+        return;
+    }
+
     defer GLTF.release_scene(*scene);
 
     compare_scene_with_reference(model_path, scene);
@@ -60,14 +69,20 @@ test_mccree :: () {
     model_path := path_join(#filepath, "assets/mccree/scene.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
-    assert(!error, error);
     GLTF.destroy_converter(converter);
+
+    assert(!error, error);
+
+    if !expect(error, "", error) {
+        return;
+    }
+
     defer GLTF.release_scene(*scene);
 
     compare_scene_with_reference(model_path, scene);
 }
 
-compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) {
+compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: bool {
     expected, ok := read_entire_file(
         path_join(
             path_strip_filename(model_path,, temp),
@@ -76,14 +91,19 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) {
         ),,
         temp,
     );
-    assert(ok, "There is no reference file!");
+
+    if !expect(ok, true, "There is no reference file!") {
+        return false;
+    }
+
     expected_lines := split(expected, "\n",, temp);
 
     actual := tprint("%", scene);
     actual_lines := split(actual, "\n",, temp);
 
-    assert(
-        expected_lines.count == actual_lines.count,
+    if !expect(
+        expected_lines.count,
+        actual_lines.count,
         #string DONE
 For model at '%':
 Expected % lines got %
@@ -91,13 +111,16 @@ Expected % lines got %
         model_path,
         expected_lines.count,
         actual_lines.count,
-    );
+    ) {
+        return false;
+    }
 
     for expected_line: expected_lines {
         actual_line := actual_lines[it_index];
 
-        assert(
-            expected_line == actual_line,
+        if !expect(
+            expected_line,
+            actual_line,
             #string DONE
 For model at '%':
 Mismatch on line '%':
@@ -105,10 +128,25 @@ Expected: '%'
 Got:      '%'
             DONE,
             model_path,
+            it_index + 1,
             expected_line,
             actual_line,
-        );
+        ) {
+            return false;
+        }
     }
+
+    return true;
+}
+
+expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool {
+    if actual == expected {
+        return true;
+    }
+
+    print_color(format_string, ..args, color = .RED, to_standard_error = true);
+
+    return false;
 }
 
 setup_formatting :: () {
