@@ -23,8 +23,6 @@ Everything here is meant for internal use.
 #import "Math";
 #import "jaison";
 
-ABSENT: s32 : -1;
-
 GLTF :: struct {
     asset: GLTF_Asset;
 
@@ -192,27 +190,29 @@ GLTF_Mesh :: struct {
         _indices:    s32         = ABSENT;     @JsonName(indices)
         _material:   s32         = ABSENT;     @JsonName(material)
          mode:       Mode        = .TRIANGLES;
-    }
 
-    Attributes :: struct {
-        _position:   s32 = ABSENT; @JsonName(POSITION)
-        _normal:     s32 = ABSENT; @JsonName(NORMAL)
-        _texcoord_0: s32 = ABSENT; @JsonName(TEXCOORD_0)
-    }
+        Attributes :: struct {
+            _position:   s32 = ABSENT; @JsonName(POSITION)
+            _normal:     s32 = ABSENT; @JsonName(NORMAL)
+            _texcoord_0: s32 = ABSENT; @JsonName(TEXCOORD_0)
+        }
 
-    Mode :: enum s32 #specified {
-        POINTS         :: 0;
-        LINES          :: 1;
-        LINE_LOOP      :: 2;
-        LINE_STRIP     :: 3;
-        TRIANGLES      :: 4;
-        TRIANGLE_STRIP :: 5;
-        TRIANGLE_FAN   :: 6;
+        Mode :: enum s32 #specified {
+            POINTS         :: 0;
+            LINES          :: 1;
+            LINE_LOOP      :: 2;
+            LINE_STRIP     :: 3;
+            TRIANGLES      :: 4;
+            TRIANGLE_STRIP :: 5;
+            TRIANGLE_FAN   :: 6;
+        }
     }
 }
 
 GLTF_Node :: struct {
      children:    [..]s32;
+     // GLTF provides column-major matrix, but Jai has row-major.
+     // But it doesn't matter here because Matrix4_Identity == transpose(Matrix4_Identity).
      matrix:      [16]float = #run Matrix4_Identity.floats;
     _mesh:        s32       = ABSENT;                       @JsonName(mesh)
      rotation:    [4]float  = float.[0, 0, 0, 1];

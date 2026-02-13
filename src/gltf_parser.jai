@@ -18,15 +18,16 @@ Scene :: struct {
 Node :: struct {
     name: string;
 
-    parent_index:     s32      = -1;
+    parent_index:     s32      = ABSENT;
     children_indices: [..]s32;
 
-    first_mesh_index: s32 = -1;
+    first_mesh_index: s32 = ABSENT;
     mesh_count:       s32;
 
     local_transform: Matrix4 = Matrix4_Identity; // Row-major
 }
 
+// We map GLTF primitives to meshes, as having the separation between a mesh and its primitives doesn't make a lot of sense for me.
 Mesh :: struct {
     name: string;
 
@@ -39,7 +40,7 @@ Mesh :: struct {
     min_position: Vector3;
     max_position: Vector3;
 
-    Mode :: GLTF_Mesh.Mode;
+    Mode :: GLTF_Mesh.Primitive.Mode;
 }
 
 Vertex :: struct {
@@ -122,7 +123,7 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
         absolute_path =, ok := get_absolute_path(gltf_path,, pool_allocator);
         if !ok {
             return tprint(
-                    "Failed to get absotlute path for '%'",
+                    "Failed to get absolute path for '%'",
                     gltf_path,
                 ),
                 scene;
@@ -136,7 +137,7 @@ load_scene :: (gltf_path: string) -> error: string, Scene {
 
     if !is_supported_version(gltf) {
         return tprint(
-                "File at '%' is GLTF version '%', but only % are supported supported",
+                "File at '%' is GLTF version '%', but only % are supported",
                 absolute_path,
                 gltf.asset.version,
                 SUPPORTED_GLTF_VERSIONS,
@@ -226,6 +227,12 @@ release_scene :: (scene: *Scene) {
 
 
 
+#scope_module
+
+ABSENT: s32 : -1;
+
+
+
 #scope_file
 
 /*
@@ -238,7 +245,7 @@ parse_gltf_node :: (
     scene:               *Scene,
     loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path:           string,
-    parent_node_index:   s32                   = -1,
+    parent_node_index:   s32                   = ABSENT,
 ) -> parsed_node_index: s32 {
     gltf_node := gltf.nodes[gltf_node_index];
 
@@ -248,12 +255,42 @@ parse_gltf_node :: (
         local_transform = extract_gltf_node_transform(gltf_node),
     };
 
+    // =========================================================================
+    // Parsing meshes (primitives)
+    // =========================================================================
+    if gltf_node._mesh != ABSENT {
+        gltf_mesh := gltf.meshes[gltf_node._mesh];
+
+        // We are going to add meshes to the scene, so the current count is exactly where the first mesh will be placed.
+        node.first_mesh_index = cast(s32, scene.meshes.count);
+        // The meshes of this node are placed contiguously. We map GLTF's primitives to our meshes
+        node.mesh_count = cast(s32, gltf_mesh.primitives.count);
+
+        common_name := gltf_mesh.name;
+
+        for gltf_primitive: gltf_mesh.primitives {
+            array_add(
+                *scene.meshes,
+                parse_gltf_primitive(
+                    gltf,
+                    gltf_primitive,
+                    loaded_gltf_buffers,
+                    root_path,
+                    common_name,
+                ),
+            );
+        }
+    }
+
     // At this point we have filled all the info for the node except it's children
     // It would be more readable if we added the node into the scene at the end of this procedure,
     // when we added the children into the node.
     // But that doesn't work because we can correctly get the index of this node inside the scene only now, before parsing child nodes.
     array_add(*scene.nodes, node);
 
+    // =========================================================================
+    // Parsing children
+    // =========================================================================
     current_node_index := scene.nodes.count - 1;
 
     for gltf_child_index: gltf_node.children {
@@ -275,20 +312,37 @@ parse_gltf_node :: (
     return cast(s32, current_node_index);
 }
 
-/*
-    We don't know what the gltf file contained - the matrix or a TRS set.
-    So we proceed in three stages:
-    1. See if the matrtix is not an identity matrix. If so - it was present in the file, because otherwise GLTF_Reader would return the identity matrix.
-    Return the matrix, we're lucky!
-    But if it's an identity matrix - we don't know whether it's an actual identity matrix from the file or just the default from the GLTF_Reader.
-    We need more evidence.
-    2. Now we need to check whether the separate TRS fields were present in the file.
-    If we are here, we know that the matrix from the file doesn't transform anything.
-    So we check the TRS. If all of them are the defaults too - we just return Matrix_Identity, as we know for sure neither the matrix nor the TRS are trying to transform.
-    3. If something from the TRS gang is not at it's default, we know for sure, there is a transformation. We calculate it and return.
-*/
+parse_gltf_primitive :: (
+    gltf:                GLTF,
+    gltf_primitive:      GLTF_Mesh.Primitive,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
+    root_path:           string,
+    common_name:         string,
+) -> Mesh {
+    mesh: Mesh;
+
+    // @Incomplete
+
+    return mesh;
+}
+
 extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
-    // Plan 1
+    /*
+        We don't know what the gltf file contained - the matrix or a TRS set.
+        So we proceed in three stages:
+        1. See if the matrtix is not an identity matrix.
+        If so - it was present in the file, because otherwise GLTF_Reader would return the identity matrix.
+        Return the matrix, we're lucky!
+        But if it's an identity matrix - we don't know whether it's an actual identity matrix from the file or just the default from the GLTF_Reader.
+        We need more evidence.
+        2. Now we need to check whether the separate TRS fields were present in the file.
+        If we are here, we know that the matrix from the file doesn't transform anything.
+        So we check the TRS.
+        :If all of them are the defaults too - we just return Matrix_Identity, as we know for sure neither the matrix nor the TRS are trying to transform.
+        3. If something from the TRS gang is not at it's default, we know for sure, there is a transformation. We calculate it and return.
+    */
+
+    // Step 1
     gltf_node_transform: Matrix4 = ---;
     gltf_node_transform.floats = gltf_node.matrix;
     gltf_node_transform = transpose(gltf_node_transform); // Transpose because Jai has row-major matrices, but the data from gltf comes in column-major.
@@ -297,7 +351,7 @@ extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
         return gltf_node_transform;
     }
 
-    // Plan 2
+    // Step 2
     gltf_node_translation: Vector3;
     gltf_node_rotation:    Quaternion;
     gltf_node_scale:       Vector3;
@@ -314,7 +368,7 @@ extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
         return Matrix4_Identity;
     }
 
-    // Plan 3
+    // Step 3
     translation := make_translation_matrix4(gltf_node_translation);
     rotation    := rotation_matrix(Matrix4, gltf_node_rotation);
     _scale      := make_scale_matrix4(gltf_node_scale);
@@ -324,7 +378,12 @@ extract_gltf_node_transform :: (gltf_node: GLTF_Node) -> Matrix4 {
 
 Loaded_GLTF_Buffer :: #type,isa string;
 
-load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, [..]Loaded_GLTF_Buffer {
+load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_GLTF_Buffer {
+    assert(
+        context.allocator.proc == FP.flat_pool_allocator_proc,
+        "This procedure expects to allocate into a pool allocator.",
+    );
+
     buffers: [..]Loaded_GLTF_Buffer;
 
     for gltf_buffer: gltf.buffers {
@@ -348,9 +407,7 @@ get_gltf_primitives_count :: (gltf: GLTF) -> u32 {
     result: u32;
 
     for mesh: gltf.meshes {
-        for primitive: mesh.primitives {
-            result += 1;
-        }
+        result += cast(u32, mesh.primitives.count);
     }
 
     return result;
