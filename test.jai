@@ -1,3 +1,5 @@
+// Pass `--create-refs` to generate new scene "expected" results for models
+
 #import "Basic"()(
     MEMORY_DEBUGGER = true,
     TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
@@ -8,11 +10,23 @@
 #import "Print_Color";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
+create_refs: bool = false;
+
 #run {
     set_build_options_dc({
         do_output = false,
         write_added_strings = false,
     });
+
+    cli_arguments := get_build_options().compile_time_command_line;
+    for argument: cli_arguments {
+        if argument == {
+            case "--create-refs";
+                create_refs = true;
+            case;
+                assert(false, "Unknown argument '%'", argument);
+        }
+    }
 
     setup_formatting();
 
@@ -43,6 +57,10 @@ test_lantern :: () {
 
     defer GLTF.release_scene(*scene);
 
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
     compare_scene_with_reference(model_path, scene);
 }
 
@@ -59,6 +77,10 @@ test_mech :: () {
     }
 
     defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
 
     compare_scene_with_reference(model_path, scene);
 }
@@ -78,6 +100,10 @@ test_mccree :: () {
     }
 
     defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
 
     compare_scene_with_reference(model_path, scene);
 }
@@ -149,11 +175,28 @@ expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool 
     return false;
 }
 
+create_reference :: (path: string, scene: GLTF.Scene) {
+    write_entire_file(
+        path_join(
+            path_strip_filename(path),
+            "reference.txt",,
+            temp
+        ),
+        tprint("%", scene),
+    );
+}
+
 setup_formatting :: () {
     print_style := *context.print_style;
 
     print_style.default_format_struct.draw_type_name = true;
     print_style.default_format_struct.use_long_form_if_more_than_this_many_members = 0;
     print_style.default_format_struct.use_newlines_if_long_form = true;
+    print_style.default_format_struct.separator_between_name_and_value = "=";
+    print_style.default_format_struct.short_form_separator_between_fields = ",";
+    print_style.default_format_struct.long_form_separator_between_fields  = ";";
+    print_style.default_format_struct.indentation_width = 1;
+
     print_style.default_format_array.stop_printing_after_this_many_elements = -1;
+    print_style.default_format_array.separator = ",";
 }
