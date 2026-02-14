@@ -244,7 +244,7 @@ convert_gltf_primitive_into_mesh :: (
     if gltf_primitive._indices != ABSENT {
         gltf_accessor := gltf.accessors[gltf_primitive._indices];
 
-        error:, mesh.indices = parse_gltf_index_atttribute(
+        error:, mesh.indices = parse_gltf_index_attribute(
             gltf,
             gltf_accessor,
             loaded_gltf_buffers,
@@ -373,7 +373,7 @@ parse_gltf_attribute :: (
             case .UNKNOWN;
                 assert(
                     false,
-                    "Wanteg accessor of type '%', but got '%'",
+                    "Wanted accessor of type '%', but got '%'",
                     Target_Type,
                     gltf_accessor.type,
                 );
@@ -383,13 +383,15 @@ parse_gltf_attribute :: (
     result: [..]Target_Type;
 
     // @AntiSpec
-    // Actually, we can continuue here instead of rejecting. If the accessor doesn't have sparse - just zero init the accessor
+    if gltf_accessor.sparse._count != ABSENT {
+        return "Got a sparse attribute, we don't support sparse, sorry!", result;
+    }
+
+    array_resize(*result, gltf_accessor.count);
+
+    // We don't have neither bufferView nor sparse for this accessor. Zero intializing as per the specification
     if gltf_accessor._buffer_view == ABSENT {
-        return tprint(
-                "No buffer view for accessor '%' (sparse is not supported)",
-                gltf_accessor.name,
-            ),
-            result;
+        return "", result;
     }
 
     _, type_byte_size := get_type_and_byte_size_from_gltf_component_type(gltf_accessor.component_type);
@@ -403,8 +405,6 @@ parse_gltf_attribute :: (
     step := ifx gltf_buffer_view._byte_stride != ABSENT
         then gltf_buffer_view._byte_stride
         else packed_stride;
-
-    array_resize(*result, gltf_accessor.count);
 
     // Data is tightly packed (not interleaved), so we can pull a memcpy
     if step == packed_stride {
@@ -424,13 +424,13 @@ parse_gltf_attribute :: (
 
         pointer := cast(*Target_Type, loaded_gltf_buffer.data + index_into_buffer);
 
-        result[it] = cast(Target_Type, pointer.*);
+        result[it] = pointer.*;
     }
 
     return "", result;
 }
 
-parse_gltf_index_atttribute :: (
+parse_gltf_index_attribute :: (
     gltf: GLTF,
     gltf_accessor: GLTF_Accessor,
     loaded_gltf_buffers: []Loaded_GLTF_Buffer,
@@ -439,12 +439,15 @@ parse_gltf_index_atttribute :: (
     result: [..]u32;
 
     // @AntiSpec
+    if gltf_accessor.sparse._count != ABSENT {
+        return "Got a sparse indices attribute, we don't support sparse, sorry!", result;
+    }
+
+    array_resize(*result, gltf_accessor.count);
+
+    // We don't have neither bufferView nor sparse for this accessor. Zero intializing as per the specification
     if gltf_accessor._buffer_view == ABSENT {
-        return tprint(
-                "No buffer view for accessor '%' (sparse is not supported)",
-                gltf_accessor.name,
-            ),
-            result;
+        return "", result;
     }
 
     // =========================================================================
@@ -460,15 +463,10 @@ parse_gltf_index_atttribute :: (
     loaded_gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
 
     start_offset := gltf_accessor.byte_offset + gltf_buffer_view.byte_offset;
-    step := ifx gltf_buffer_view._byte_stride == ABSENT
-        then index_type_byte_size
-        else gltf_buffer_view._byte_stride;
-
-    array_resize(*result, gltf_accessor.count);
 
     // If GLTF data is u32 too, we can just copy the memory
     if index_type == u32 {
-        bytes_to_copy := gltf_accessor.count * step;
+        bytes_to_copy := gltf_accessor.count * index_type_byte_size;
         memcpy(
             result.data,
             loaded_gltf_buffer.data + start_offset,

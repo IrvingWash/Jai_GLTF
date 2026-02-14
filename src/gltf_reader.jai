@@ -79,6 +79,12 @@ GLTF_Accessor :: struct {
      max:            [..]float;
      min:            [..]float;
      name:           string;
+     sparse:         Sparse_Incomplete;
+
+     Sparse_Incomplete :: struct {
+        // Yes, this is a required field. We are setting it to ABSENT to see if the object itself is present in the GLTF file
+        _count: s32 = ABSENT; @JsonName(count)
+     }
 
     Component_Type :: enum s32 #specified {
         UNKNOWN        :: 0;
@@ -361,6 +367,20 @@ validate :: (gltf: GLTF, path: string) -> errors: string {
                     print_to_builder(
                         *builder,
                         "GLTF at '%': Primitive of mesh '%' got buffer view into indices data that has a target of ARRAY_BUFFER\n",
+                        path,
+                        gltf_mesh.name,
+                    );
+                }
+
+                // @AntiSpec?
+                // Buffer view shouldn't have a byte stride
+                if (
+                    gltf_indices_accessor._buffer_view != ABSENT
+                    && gltf.buffer_views[gltf_indices_accessor._buffer_view]._byte_stride != ABSENT
+                ) {
+                    print_to_builder(
+                        *builder,
+                        "GLTF at '%': Primitive of mesh '%' got buffer view into indices data that has a stride\n",
                         path,
                         gltf_mesh.name,
                     );
