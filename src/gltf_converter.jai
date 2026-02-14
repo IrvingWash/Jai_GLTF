@@ -54,24 +54,6 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         return error, scene;
     }
 
-    if !is_supported_version(gltf) {
-        return tprint(
-                "File at '%' is GLTF version '%', but only % are supported",
-                absolute_path,
-                gltf.asset.version,
-                SUPPORTED_GLTF_VERSIONS,
-            ),
-            scene;
-    }
-
-    if gltf._scene == ABSENT {
-        return tprint(
-                "File at '%' doesn't have a default scene",
-                absolute_path,
-            ),
-            scene;
-    }
-
     if gltf.scenes.count != 1 {
         return tprint(
                 "File at '%' contains % scenes, but only 1 scene is supported",
@@ -801,14 +783,6 @@ get_component_count_per_container_from_accessor_type :: (accessor_type: GLTF_Acc
     assert(false, "This should never happen");
 
     return 0;
-}
-
-SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
-
-is_supported_version :: (gltf: GLTF) -> bool {
-    ok := array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version);
-
-    return ok;
 }
 
 #import "Basic";

@@ -23,8 +23,52 @@ GLTF :: struct {
     textures:     [..]GLTF_Texture;
 }
 
+validate :: (gltf: GLTF, path: string) -> errors: string {
+    errors: String_Builder;
+    errors.allocator = temp;
+
+    SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
+    if !array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version) {
+        print_to_builder(
+            *errors,
+            "GLTF at '%' is version '%', but only % are supported",
+            path,
+            gltf.asset.version,
+            SUPPORTED_GLTF_VERSIONS,
+        );
+    }
+
+    if gltf._scene == ABSENT {
+        print_to_builder(
+            *errors,
+            "GLTF at '%' doesn't have a default scene",
+            path,
+        );
+    }
+
+    for gltf_mesh: gltf.meshes {
+        for gltf_primitive: gltf_mesh.primitives {
+            if gltf_primitive.attributes._position == ABSENT {
+                print_to_builder(
+                    *errors,
+                    "GLTF at '%'",
+                    path,
+                );
+                print_to_builder(
+                    *errors,
+                    "Primitive of mesh '%' doesn't have POSITION attribute",
+                    gltf_mesh.name,
+                );
+                print("%\n", gltf_primitive);
+            }
+        }
+    }
+
+    return builder_to_string(*errors);
+}
+
 /*
-    This procedure is called from a single place with a pool alloctor.
+    This procedure is called from a single place with a pool allocator.
     We don't need to free anything here.
     The pool allocator will be reset by the caller.
 */
@@ -49,6 +93,14 @@ read_gltf :: (path: string) -> error: string, GLTF {
     ok, gltf := json_parse_file(path, GLTF);
     if !ok {
         return tprint("Failed to parse GLTF JSON data from %", path), gltf;
+    }
+
+    #if DO_SANITY_CHECKS {
+        errors := validate(gltf, path);
+
+        if errors {
+            return errors, gltf;
+        }
     }
 
     return "", gltf;
