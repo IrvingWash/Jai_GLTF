@@ -11,6 +11,8 @@
 #import "xxHash";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
+HASH_SEED :: 1;
+
 create_refs: bool = false;
 
 #run {
@@ -152,9 +154,42 @@ test_mccree :: () {
 }
 
 compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: bool {
-    expected, ok := read_entire_file(
+    root_dir := path_strip_filename(model_path,, temp);
+
+    actual := tprint("%", scene,, temp);
+
+    actual_hashed := native_XXH64(actual.data, xx actual.count, HASH_SEED);
+
+    expected_hashed_string, ok := read_entire_file(
         path_join(
-            path_strip_filename(model_path,, temp),
+            root_dir,
+            "hashed_reference.txt",,
+            temp
+        ),,
+        temp,
+    );
+    if !expect(ok, true, "There is no hashed reference file!\n") {
+        return false;
+    }
+
+    expected_hashed:, ok=, remainder := string_to_int(expected_hashed_string, T = u64);
+    assert(
+        ok && !remainder,
+        "Failed to compare hashes for '%', because the stored hash couldn't be parsed into a number",
+        model_path,
+    );
+
+    if expect(actual_hashed, expected_hashed, "Hashes didn't match for '%'", model_path) {
+        return true;
+    }
+
+    // =========================================================================
+    // Generate readable errors
+    // =========================================================================
+
+    expected:, ok = read_entire_file(
+        path_join(
+            root_dir,
             "reference.txt",,
             temp
         ),,
@@ -167,10 +202,9 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
 
     expected_lines := split(expected, "\n",, temp);
 
-    actual := tprint("%", scene);
     actual_lines := split(actual, "\n",, temp);
 
-    if !expect(
+    expect(
         expected_lines.count,
         actual_lines.count,
         #string DONE
@@ -180,14 +214,12 @@ Expected % lines got %
         model_path,
         expected_lines.count,
         actual_lines.count,
-    ) {
-        return false;
-    }
+    );
 
     for expected_line: expected_lines {
         actual_line := actual_lines[it_index];
 
-        if !expect(
+        expect(
             expected_line,
             actual_line,
             #string DONE
@@ -200,12 +232,10 @@ Got:      '%'
             it_index + 1,
             expected_line,
             actual_line,
-        ) {
-            return false;
-        }
+        );
     }
 
-    return true;
+    return false;
 }
 
 expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool {
@@ -229,7 +259,10 @@ create_reference :: (path: string, scene: GLTF.Scene) {
             "hashed_reference.txt",,
             temp,
         ),
-        tprint("%", native_XXH64(serialized_scene.data, xx serialized_scene.count, 1,, temp)),
+        tprint(
+            "%",
+            native_XXH64(serialized_scene.data, xx serialized_scene.count, HASH_SEED,, temp)
+        ),
     );
 
     write_entire_file(
