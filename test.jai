@@ -8,6 +8,7 @@
 #import "String";
 #import "File";
 #import "Print_Color";
+#import "xxHash";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
 create_refs: bool = false;
@@ -218,13 +219,26 @@ expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool 
 }
 
 create_reference :: (path: string, scene: GLTF.Scene) {
+    serialized_scene := tprint("%", scene);
+
+    root_dir := path_strip_filename(path,, temp);
+
     write_entire_file(
         path_join(
-            path_strip_filename(path),
+            root_dir,
+            "hashed_reference.txt",,
+            temp,
+        ),
+        tprint("%", native_XXH64(serialized_scene.data, xx serialized_scene.count, 1,, temp)),
+    );
+
+    write_entire_file(
+        path_join(
+            root_dir,
             "reference.txt",,
             temp
         ),
-        tprint("%", scene),
+        serialized_scene,
     );
 }
 
