@@ -61,7 +61,8 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
 
 ## Todo
 
-- Support `.glb`
+- Add mesh merging
+- Support data uris
 - Support TEXCOORD_N (>0) in attributes
 - Support sparse accessors (`sparse` field in `GLTF_Accessor`)
 - Support animations (`animations`)

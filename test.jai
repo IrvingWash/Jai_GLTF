@@ -32,9 +32,10 @@ create_refs: bool = false;
 
     print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
 
+    test_mech_glb();
+    test_mech();
     test_glb_lantern();
     test_lantern();
-    test_mech();
     test_mccree();
 
     print_color("Jai_GLTF: All tests finished\n", color = .YELLOW, style = .BOLD);
@@ -107,6 +108,27 @@ test_mech :: () {
     compare_scene_with_reference(model_path, scene);
 }
 
+test_mech_glb :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/mech_glb/mech.glb",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    GLTF.destroy_converter(converter);
+
+    if !expect(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
 test_mccree :: () {
     converter := GLTF.create_converter();
 
@@ -138,7 +160,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
         temp,
     );
 
-    if !expect(ok, true, "There is no reference file!") {
+    if !expect(ok, true, "There is no reference file!\n") {
         return false;
     }
 

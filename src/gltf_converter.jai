@@ -691,9 +691,23 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
     }
 
     buffers: [..]Loaded_GLTF_Buffer;
+    array_resize(*buffers, gltf.buffers.count);
 
+    has_added_loaded_buffer_from_glb: bool;
     for gltf_buffer: gltf.buffers {
-        absolute_buffer_path := path_join(root_path, gltf_buffer.uri);
+        if (
+            !gltf_buffer._uri
+            && gltf.loaded_buffer_from_glb
+            && !has_added_loaded_buffer_from_glb
+        ) {
+            buffers[it_index] = cast(Loaded_GLTF_Buffer, gltf.loaded_buffer_from_glb);
+
+            has_added_loaded_buffer_from_glb = true;
+
+            continue;
+        }
+
+        absolute_buffer_path := path_join(root_path, gltf_buffer._uri);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
             return tprint(
@@ -703,10 +717,7 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
             buffers;
         }
 
-        array_add(
-            *buffers,
-            cast(Loaded_GLTF_Buffer, bytes),
-        );
+        buffers[it_index] = cast(Loaded_GLTF_Buffer, bytes);
     }
 
     return "", buffers;
