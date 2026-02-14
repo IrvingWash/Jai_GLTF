@@ -65,6 +65,7 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
 - Support `.glb`
 - Try to move DO_SANITY_CHECK stuff into a standalone validator procedure
 - Stop returning an error if an attribute doesn't have a buffer view and if it doesn't have a sparse. Use zero-initialized attribute
+- Support Texcoor_N (>0) in attributes
 - Support sparse accessors (`sparse` field in `GLTF_Accessor`)
 - Support animations (`animations`)
 - Support `weights` in `GLTF_Mesh`

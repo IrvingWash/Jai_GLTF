@@ -409,7 +409,6 @@ parse_gltf_attribute :: (
 
     result: [..]Target_Type;
 
-    // @Todo we should actuall check if there is a sparse. If not - we don't error, just initialize this accessor with zeroes.
     if gltf_accessor._buffer_view == ABSENT {
         return tprint(
                 "No buffer view for accessor '%' (sparse is not supported)",
