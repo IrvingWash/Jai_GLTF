@@ -46,9 +46,40 @@ read_gltf :: (path: string) -> error: string, GLTF {
         );
     }
 
-    ok, gltf := json_parse_file(path, GLTF);
+    gltf: GLTF;
+
+    extension, ok := path_extension(path);
     if !ok {
-        return tprint("Failed to parse GLTF JSON data from %", path), gltf;
+        return tprint(
+            "The provided path '%' is not a path to a file with an extension. We want a path to a .gltf or a .glb file\n",
+            path,
+        ),
+        gltf;
+    }
+
+    if extension == {
+        case GLTF_EXTENSION;
+            ok, gltf = json_parse_file(path, GLTF);
+            if !ok {
+                return tprint("Failed to parse GLTF JSON data from '%'\n", path), gltf;
+            }
+        case GLB_EXTENSION;
+            glb_data:, ok = read_entire_file(path);
+            if !ok {
+                return tprint("Failed to read .glb file from '%'\n", path), gltf;
+            }
+
+            error := parse_glb_data(glb_data, *gltf, path);
+            if error {
+                return error, gltf;
+            }
+        case;
+            return tprint(
+                "Unknown extension '%' at '%', only .gltf and .glb is supported\n",
+                path,
+                extension,
+            ),
+            gltf;
     }
 
     #if DO_SANITY_CHECKS {
@@ -265,13 +296,87 @@ GLTF_Texture :: struct {
 
 #scope_file
 
+GLB_Header :: struct {
+    magic: u32;
+    version: u32;
+    length: u32;
+}
+
+GLB_Chunk_Info :: struct {
+    length: u32;
+    type:   Chunk_Type;
+
+    Chunk_Type :: enum u32 #specified {
+        JSON :: 0x4E4F534A;
+        BIN  :: 0x004E4942;
+    }
+}
+
+GLB_MAGIC :: 0x46546C67;
+
+SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
+SUPPORTED_GLB_VERSIONS  :: u32.[2];
+
+GLTF_EXTENSION :: "gltf";
+GLB_EXTENSION  :: "glb";
+
+parse_glb_data :: (glb_data: string, gltf: *GLTF, path: string) -> error: string {
+    #if DO_SANITY_CHECKS {
+        header := cast(*GLB_Header, glb_data.data);
+
+        if header.magic != GLB_MAGIC {
+            return tprint(
+                "Malformed .glb file at '%': magic is '%' instead of '%'",
+                path,
+                header.magic,
+                GLB_MAGIC,
+            );
+        }
+
+        if !array_find(SUPPORTED_GLB_VERSIONS, header.version) {
+            return tprint(
+                "Unsupported .glb version '%' at '%', we support only '%'",
+                path,
+                header.version,
+                SUPPORTED_GLB_VERSIONS,
+            );
+        }
+    }
+
+    // Get the JSON
+    json_chunk_info := cast(*GLB_Chunk_Info, glb_data.data + size_of(GLB_Header));
+    if json_chunk_info.type != .JSON {
+        return tprint(
+            "Malformed .glb file at '%': first chunk should be of type json, but it's '%'",
+            path,
+            json_chunk_info.type,
+        );
+    }
+
+    GLB_JSON_OFFSET :: size_of(GLB_Header) + size_of(GLB_Chunk_Info);
+
+    json := string.{
+        data = glb_data.data + GLB_JSON_OFFSET,
+        count = json_chunk_info.length,
+    };
+
+    ok:, gltf.* = json_parse_string(json, GLTF);
+    if !ok {
+        return tprint(
+            "Failed to parse JSON from .glb at '%'",
+            path,
+        );
+    }
+
+    return "";
+}
+
 validate :: (gltf: GLTF, path: string) -> errors: string {
     push_allocator(temp);
 
     builder: String_Builder;
 
     // We support only GLTF 2.0
-    SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
     if !array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version) {
         print_to_builder(
             *builder,
@@ -297,7 +402,7 @@ validate :: (gltf: GLTF, path: string) -> errors: string {
     if gltf.scenes.count != 1 {
         print_to_builder(
             *builder,
-            "GLTF at '%' contains % scenes, but only 1 scene is supported",
+            "GLTF at '%' contains % scenes, but only 1 scene is supported\n",
             path,
             gltf.scenes.count,
         );
@@ -310,7 +415,7 @@ validate :: (gltf: GLTF, path: string) -> errors: string {
         if gltf_texture._source == ABSENT {
             print_to_builder(
                 *builder,
-                "GLTF at '%' has texture '%' which doesn't have a source",
+                "GLTF at '%' has texture '%' which doesn't have a source\n",
                 path,
                 gltf_texture.name,
             );

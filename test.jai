@@ -32,6 +32,7 @@ create_refs: bool = false;
 
     print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
 
+    test_glb_lantern();
     test_lantern();
     test_mech();
     test_mccree();
@@ -47,6 +48,27 @@ test_lantern :: () {
     converter := GLTF.create_converter();
 
     model_path := path_join(#filepath, "assets/lantern/lantern.gltf",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    GLTF.destroy_converter(converter);
+
+    if !expect(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
+test_glb_lantern :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/lantern_glb/lantern.glb",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
     GLTF.destroy_converter(converter);
