@@ -132,6 +132,7 @@ release_scene :: (scene: *Scene) {
         free(material.normal_texture.texture.image_path);
         free(material.occlusion_texture.texture.image_path);
         free(material.emissive_texture.texture.image_path);
+
         free(material.pbr_metallic_roughness.base_color_texture.image_data);
         free(material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
         free(material.normal_texture.texture.image_data);
