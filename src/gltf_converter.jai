@@ -54,15 +54,6 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         return error, scene;
     }
 
-    if gltf.scenes.count != 1 {
-        return tprint(
-                "File at '%' contains % scenes, but only 1 scene is supported",
-                absolute_path,
-                gltf.scenes.count,
-            ),
-            scene;
-    }
-
     root_path := path_strip_filename(absolute_path,, converter.allocator);
 
     error =, loaded_gltf_buffers := load_gltf_buffers(
@@ -353,40 +344,46 @@ parse_gltf_attribute :: (
 }
 {
     #if DO_SANITY_CHECKS {
-        #if Target_Type == {
-            case Vector2;
+        if #complete gltf_accessor.type == {
+            case .VEC2;
                 assert(
-                    gltf_accessor.type == .VEC2 && gltf_accessor.component_type == .FLOAT,
-                    "Wanted '%', but the attribute has '%'",
+                    Target_Type == Vector2,
+                    "Wanted accessor of type '%', but got '%'",
                     Target_Type,
                     gltf_accessor.type,
                 );
-            case Vector3;
+            case .VEC3;
                 assert(
-                    gltf_accessor.type == .VEC3 && gltf_accessor.component_type == .FLOAT,
-                    "Wanted '%', but the attribute has '%'",
+                    Target_Type == Vector3,
+                    "Wanted accessor of type '%', but got '%'",
+                    Target_Type,
+                    gltf_accessor.type,
+                );
+            case .SCALAR;
+                assert(
+                    IsScalar(Target_Type),
+                    "Wanted accessor of type '%', but got '%'",
+                    Target_Type,
+                    gltf_accessor.type,
+                );
+            case .VEC4; #through;
+            case .MAT2; #through;
+            case .MAT3; #through;
+            case .MAT4; #through;
+            case .UNKNOWN;
+                assert(
+                    false,
+                    "Wanteg accessor of type '%', but got '%'",
                     Target_Type,
                     gltf_accessor.type,
                 );
         }
-        if IsScalar(Target_Type) {
-            assert(
-                gltf_accessor.type == .SCALAR,
-                "Wanted '%', but the attribute has '%'",
-                Target_Type,
-                gltf_accessor.type,
-            );
-        }
-
-        assert(
-            gltf_accessor.type == .VEC2
-            || gltf_accessor.type == .VEC3
-            || gltf_accessor.type == .SCALAR,
-        );
     }
 
     result: [..]Target_Type;
 
+    // @AntiSpec
+    // Actually, we can continuue here instead of rejecting. If the accessor doesn't have sparse - just zero init the accessor
     if gltf_accessor._buffer_view == ABSENT {
         return tprint(
                 "No buffer view for accessor '%' (sparse is not supported)",
@@ -441,6 +438,7 @@ parse_gltf_index_atttribute :: (
 {
     result: [..]u32;
 
+    // @AntiSpec
     if gltf_accessor._buffer_view == ABSENT {
         return tprint(
                 "No buffer view for accessor '%' (sparse is not supported)",
@@ -617,14 +615,6 @@ convert_gltf_material :: (
 
 convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> error: string, Material.Texture {
     texture: Material.Texture = ---;
-
-    #if DO_SANITY_CHECKS {
-        assert(
-            gltf_texture._source != ABSENT,
-            "Got a texture '%', but it doesn't have a source",
-            gltf_texture.name,
-        );
-    }
 
     gltf_image   := gltf.images[gltf_texture._source];
     gltf_sampler := ifx gltf_texture._sampler != ABSENT

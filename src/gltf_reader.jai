@@ -276,6 +276,7 @@ validate :: (gltf: GLTF, path: string) -> errors: string {
         );
     }
 
+    // @AntiSpec
     // There should be a scene
     if gltf._scene == ABSENT {
         print_to_builder(
@@ -285,9 +286,34 @@ validate :: (gltf: GLTF, path: string) -> errors: string {
         );
     }
 
+    // @AntiSpec
+    // We support only one scene
+    if gltf.scenes.count != 1 {
+        print_to_builder(
+            *builder,
+            "GLTF at '%' contains % scenes, but only 1 scene is supported",
+            path,
+            gltf.scenes.count,
+        );
+    }
+
+
+    for gltf_texture: gltf.textures {
+        // @AntiSpec
+        // Textures should have a source in our implementation, though it's not required by the spec.
+        if gltf_texture._source == ABSENT {
+            print_to_builder(
+                *builder,
+                "GLTF at '%' has texture '%' which doesn't have a source",
+                path,
+                gltf_texture.name,
+            );
+        }
+    }
+
     for gltf_mesh: gltf.meshes {
-        // All the primitives should have position
         for gltf_primitive: gltf_mesh.primitives {
+            // @AntiSpec?
             // Every primitive should have a position
             if gltf_primitive.attributes._position == ABSENT {
                 print_to_builder(
