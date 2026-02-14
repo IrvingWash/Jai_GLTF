@@ -245,12 +245,8 @@ convert_gltf_primitive_into_mesh :: (
     mesh: Mesh = {
         name = copy_string(common_name),
         mode = gltf_primitive.mode,
+        material_index = gltf_primitive._material,
     };
-
-    // =========================================================================
-    // Material
-    // =========================================================================
-    mesh.material_index = gltf_primitive._material;
 
     // =========================================================================
     // Indices
