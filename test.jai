@@ -282,18 +282,18 @@ create_reference :: (path: string, scene: GLTF.Scene) {
 
 // Erasing this stuff so the printing is not too huge.
 erase_image_data :: (scene: *GLTF.Scene) {
-    for *mesh: scene.meshes {
-        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_data);
-        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
-        free(mesh.material.normal_texture.texture.image_data);
-        free(mesh.material.occlusion_texture.texture.image_data);
-        free(mesh.material.emissive_texture.texture.image_data);
+    for *material: scene.materials {
+        free(material.pbr_metallic_roughness.base_color_texture.image_data);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
+        free(material.normal_texture.texture.image_data);
+        free(material.occlusion_texture.texture.image_data);
+        free(material.emissive_texture.texture.image_data);
 
-        mesh.material.pbr_metallic_roughness.base_color_texture.image_data = {};
-        mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_data = {};
-        mesh.material.normal_texture.texture.image_data = {};
-        mesh.material.occlusion_texture.texture.image_data = {};
-        mesh.material.emissive_texture.texture.image_data = {};
+        material.pbr_metallic_roughness.base_color_texture.image_data = {};
+        material.pbr_metallic_roughness.metallic_roughness_texture.image_data = {};
+        material.normal_texture.texture.image_data = {};
+        material.occlusion_texture.texture.image_data = {};
+        material.emissive_texture.texture.image_data = {};
     }
 }
 

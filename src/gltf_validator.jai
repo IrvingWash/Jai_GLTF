@@ -4,9 +4,10 @@ validate_gltf :: (gltf: GLTF, path: string) -> errors: string {
     builder: String_Builder;
 
     validate_version(gltf, *builder, path);
+    validate_buffers(gltf, *builder, path);
     validate_buffers_without_uris(gltf, *builder, path);
     validate_scenes(gltf, *builder, path);
-    validate_textures(gltf, *builder, path);
+    validate_textures_and_images(gltf, *builder, path);
     validate_meshes(gltf, *builder, path);
 
     return builder_to_string(*builder,, temp);
@@ -15,7 +16,7 @@ validate_gltf :: (gltf: GLTF, path: string) -> errors: string {
 validate_glb_header :: (header: GLB_Header, path: string) -> error: string {
     if header.magic != GLB_MAGIC {
         return tprint(
-            "Malformed .glb file at '%': magic is '%' instead of '%'",
+            "Malformed .glb file at '%': magic is '%' instead of '%'\n",
             path,
             header.magic,
             GLB_MAGIC,
@@ -24,7 +25,7 @@ validate_glb_header :: (header: GLB_Header, path: string) -> error: string {
 
     if !array_find(SUPPORTED_GLB_VERSIONS, header.version) {
         return tprint(
-            "Unsupported .glb version '%' at '%', we support only '%'",
+            "Unsupported .glb version '%' at '%', we support only '%'\n",
             path,
             header.version,
             SUPPORTED_GLB_VERSIONS,
@@ -37,7 +38,7 @@ validate_glb_header :: (header: GLB_Header, path: string) -> error: string {
 validate_glb_json_chunk :: (json_chunk_info: GLB_Chunk_Info, path: string) -> error: string {
     if json_chunk_info.type != .JSON {
         return tprint(
-            "Malformed .glb file at '%': first chunk should be of type json, but it's '%'",
+            "Malformed .glb file at '%': first chunk should be of type json, but it's '%'\n",
             path,
             json_chunk_info.type,
         );
@@ -49,7 +50,7 @@ validate_glb_json_chunk :: (json_chunk_info: GLB_Chunk_Info, path: string) -> er
 validate_glb_binary_chunk :: (binary_chunk_info: GLB_Chunk_Info, path: string) -> error: string {
     if binary_chunk_info.type != .BIN {
         return tprint(
-            "Binary chunk in GLB at '%' is malformed: expected it's type to be BIN, but got '%'",
+            "Binary chunk in GLB at '%' is malformed: expected it's type to be BIN, but got '%\n'",
             path,
             binary_chunk_info.type,
         );
@@ -101,7 +102,7 @@ validate_scenes :: (gltf: GLTF, builder: *String_Builder, path: string) {
     }
 }
 
-validate_textures :: (gltf: GLTF, builder: *String_Builder, path: string) {
+validate_textures_and_images :: (gltf: GLTF, builder: *String_Builder, path: string) {
     for gltf_texture: gltf.textures {
         // @AntiSpec
         // Textures should have a source in our implementation, though it's not required by the spec.
@@ -111,6 +112,17 @@ validate_textures :: (gltf: GLTF, builder: *String_Builder, path: string) {
                 "GLTF at '%' has texture '%' which doesn't have a source\n",
                 path,
                 gltf_texture.name,
+            );
+        }
+    }
+
+    for gltf_image: gltf.images {
+        // @AntiSpec
+        if starts_with(gltf_image._uri, "data:") {
+            print_to_builder(
+                builder,
+                "GLTF at '%' got an image with 'data:' uri. We don't support it, sorry!\n",
+                path,
             );
         }
     }
@@ -190,6 +202,19 @@ validate_meshes :: (gltf: GLTF, builder: *String_Builder, path: string) {
     }
 }
 
+validate_buffers :: (gltf: GLTF, builder: *String_Builder, path: string) {
+    for gltf_buffer: gltf.buffers {
+        // @AntiSpec
+        if starts_with(gltf_buffer._uri, "data:") {
+            print_to_builder(
+                builder,
+                "GLTF at '%' got a buffer with data uri. Sorry, we don't support it.\n",
+                path,
+            );
+        }
+    }
+}
+
 // @AntiSpec?
 // If the first buffer doesn't have uri, we must have a buffer from glb.
 // There should be only one such file.
@@ -199,6 +224,20 @@ validate_buffers_without_uris :: (gltf: GLTF, builder: *String_Builder, path: st
         if !gltf_buffer._uri {
             array_add(*buffers_without_uri_indices, it_index);
         }
+    }
+
+    if (
+        buffers_without_uri_indices.count == 1
+        && gltf.loaded_buffer_from_glb
+        && gltf.buffers[buffers_without_uri_indices[0]].byte_length != gltf.loaded_buffer_from_glb.count
+    ) {
+        print_to_builder(
+            builder,
+            "GLTF at '%' got 1 buffer without uri and a buffer from glb, but the buffers byte_lengt is not equal to the glb's\n",
+            path,
+        );
+
+        return;
     }
 
     // Got a dangling buffer from gltf

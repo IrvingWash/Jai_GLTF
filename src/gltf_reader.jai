@@ -165,10 +165,10 @@ GLTF_Buffer_View :: struct {
 }
 
 GLTF_Image :: struct {
-     uri:         string;
-    _buffer_view: s32 = ABSENT; @JsonName(bufferView)
+    _uri:         string;         @JsonName(uri)
+    _buffer_view: s32 =   ABSENT; @JsonName(bufferView)
      name:        string;
-     mime_type: string; @JsonName(mimeType)
+     mime_type:   string;         @JsonName(mimeType)
 }
 
 GLTF_Material :: struct {

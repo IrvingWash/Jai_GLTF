@@ -92,6 +92,18 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         }
     }
 
+    // @Todo in a multiscene setup, if we want only one scene, we will save materials from other scenes
+    for gltf_material: gltf.materials {
+        error, material := convert_gltf_material(gltf, gltf_material, loaded_gltf_buffers, root_path);
+        if error {
+            release_scene(*scene);
+
+            return error, Scene.{};
+        }
+
+        array_add(*scene.materials, material);
+    }
+
     return "", scene;
 }
 
@@ -110,20 +122,23 @@ release_scene :: (scene: *Scene) {
         free(mesh.name);
         array_free(mesh.vertices);
         array_free(mesh.indices);
-
-        free(mesh.material.name);
-        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_path);
-        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_path);
-        free(mesh.material.normal_texture.texture.image_path);
-        free(mesh.material.occlusion_texture.texture.image_path);
-        free(mesh.material.emissive_texture.texture.image_path);
-        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_data);
-        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
-        free(mesh.material.normal_texture.texture.image_data);
-        free(mesh.material.occlusion_texture.texture.image_data);
-        free(mesh.material.emissive_texture.texture.image_data);
     }
     array_free(scene.meshes);
+
+    for material: scene.materials {
+        free(material.name);
+        free(material.pbr_metallic_roughness.base_color_texture.image_path);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_path);
+        free(material.normal_texture.texture.image_path);
+        free(material.occlusion_texture.texture.image_path);
+        free(material.emissive_texture.texture.image_path);
+        free(material.pbr_metallic_roughness.base_color_texture.image_data);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
+        free(material.normal_texture.texture.image_data);
+        free(material.occlusion_texture.texture.image_data);
+        free(material.emissive_texture.texture.image_data);
+    }
+    array_free(scene.materials);
 
     scene.* = {};
 }
@@ -234,14 +249,7 @@ convert_gltf_primitive_into_mesh :: (
     // =========================================================================
     // Material
     // =========================================================================
-    if gltf_primitive._material != ABSENT {
-        gltf_material := gltf.materials[gltf_primitive._material];
-
-        error:, mesh.material = convert_gltf_material(gltf, gltf_material, loaded_gltf_buffers, root_path);
-        if error {
-            return error, mesh;
-        }
-    }
+    mesh.material_index = gltf_primitive._material;
 
     // =========================================================================
     // Indices
@@ -642,8 +650,8 @@ convert_gltf_texture :: (
         wrap_t     = gltf_sampler.wrap_t,
     };
 
-    if gltf_image.uri {
-        texture.image_path = path_join(root_path, gltf_image.uri);
+    if gltf_image._uri {
+        texture.image_path = path_join(root_path, gltf_image._uri);
     } else {
         if gltf_image._buffer_view == ABSENT { // @Todo move this into the validator. Image sould have an uri or buffer view
             return "No buffer view for image which doesn't have an uri", texture;
