@@ -2,9 +2,11 @@ Scene :: struct {
     name:   string;
 
     // Flat array of all the nodes
-    nodes:  [..]Node;
+    nodes:     [..]Node;
     // Flat array of all the meshes
-    meshes: [..]Mesh;
+    meshes:    [..]Mesh;
+    // Flat array of all the materials
+    materials: [..]Material;
 }
 
 Node :: struct {
@@ -34,10 +36,10 @@ Mesh :: struct {
     indices:  [..]u32;
     mode:     Mode = .TRIANGLES;
 
-    material: Material;
-
     min_position: Vector3;
     max_position: Vector3;
+
+    material_index: s32 = ABSENT;
 
     Mode :: GLTF_Mesh.Primitive.Mode;
 }
@@ -87,7 +89,9 @@ Material :: struct {
     }
 
     Texture :: struct {
+        // Only one of these will be populated
         image_path: string;
+        image_data: string;
 
         mag_filter: Mag_Filter = .UNKNOWN;
         min_filter: Min_Filter = .UNKNOWN;

@@ -21,6 +21,10 @@ GLTF :: struct {
     samplers:     [..]GLTF_Sampler;
     scenes:       [..]GLTF_Scene;
     textures:     [..]GLTF_Texture;
+
+    // The binary buffer from glb is stored here.
+    // There's, of course, no such a field in the spec, but this is the simplest way to pass the data around.
+    loaded_buffer_from_glb: string; @JsonIgnore
 }
 
 /*
@@ -46,13 +50,44 @@ read_gltf :: (path: string) -> error: string, GLTF {
         );
     }
 
-    ok, gltf := json_parse_file(path, GLTF);
+    gltf: GLTF;
+
+    extension, ok := path_extension(path);
     if !ok {
-        return tprint("Failed to parse GLTF JSON data from %", path), gltf;
+        return tprint(
+            "The provided path '%' is not a path to a file with an extension. We want a path to a .gltf or a .glb file\n",
+            path,
+        ),
+        gltf;
+    }
+
+    if extension == {
+        case GLTF_EXTENSION;
+            ok, gltf = json_parse_file(path, GLTF);
+            if !ok {
+                return tprint("Failed to parse GLTF JSON data from '%'\n", path), gltf;
+            }
+        case GLB_EXTENSION;
+            glb_data:, ok = read_entire_file(path);
+            if !ok {
+                return tprint("Failed to read .glb file from '%'\n", path), gltf;
+            }
+
+            error := parse_glb_data(glb_data, *gltf, path);
+            if error {
+                return error, gltf;
+            }
+        case;
+            return tprint(
+                "Unknown extension '%' at '%', only .gltf and .glb is supported\n",
+                extension,
+                path,
+            ),
+            gltf;
     }
 
     #if DO_SANITY_CHECKS {
-        errors := validate(gltf, path);
+        errors := validate_gltf(gltf, path);
 
         if errors {
             return errors, gltf;
@@ -109,9 +144,9 @@ GLTF_Accessor :: struct {
 }
 
 GLTF_Buffer :: struct {
-    uri: string;
-    byte_length: s32; @JsonName(byteLength)
-    name: string;
+    _uri: string;      @JsonName(uri)
+     byte_length: s32; @JsonName(byteLength)
+     name: string;
 }
 
 GLTF_Buffer_View :: struct {
@@ -130,10 +165,10 @@ GLTF_Buffer_View :: struct {
 }
 
 GLTF_Image :: struct {
-     uri:         string;
-    _buffer_view: s32 = ABSENT; @JsonName(bufferView)
+    _uri:         string;         @JsonName(uri)
+    _buffer_view: s32 =   ABSENT; @JsonName(bufferView)
      name:        string;
-     mime_type: string; @JsonName(mimeType)
+     mime_type:   string;         @JsonName(mimeType)
 }
 
 GLTF_Material :: struct {
@@ -261,135 +296,94 @@ GLTF_Texture :: struct {
      name:    string;
 }
 
+GLB_Header :: struct {
+    magic: u32;
+    version: u32;
+    length: u32;
+}
+
+GLB_Chunk_Info :: struct {
+    length: u32;
+    type:   Chunk_Type;
+
+    Chunk_Type :: enum u32 #specified {
+        JSON :: 0x4E4F534A;
+        BIN  :: 0x004E4942;
+    }
+}
+
 
 
 #scope_file
 
-validate :: (gltf: GLTF, path: string) -> errors: string {
-    push_allocator(temp);
+GLB_JSON_DATA_OFFSET :: size_of(GLB_Header) + size_of(GLB_Chunk_Info);
+GLB_CHUNK_BOUNDARY_BYTE_SIZE :: 4;
 
-    builder: String_Builder;
+GLTF_EXTENSION :: "gltf";
+GLB_EXTENSION  :: "glb";
 
-    // We support only GLTF 2.0
-    SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
-    if !array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version) {
-        print_to_builder(
-            *builder,
-            "GLTF at '%' is version '%', but only % are supported\n",
-            path,
-            gltf.asset.version,
-            SUPPORTED_GLTF_VERSIONS,
-        );
-    }
+parse_glb_data :: (glb_data: string, gltf: *GLTF, path: string) -> error: string {
+    header := cast(*GLB_Header, glb_data.data);
 
-    // @AntiSpec
-    // There should be a scene
-    if gltf._scene == ABSENT {
-        print_to_builder(
-            *builder,
-            "GLTF at '%' doesn't have a default scene\n",
-            path,
-        );
-    }
-
-    // @AntiSpec
-    // We support only one scene
-    if gltf.scenes.count != 1 {
-        print_to_builder(
-            *builder,
-            "GLTF at '%' contains % scenes, but only 1 scene is supported",
-            path,
-            gltf.scenes.count,
-        );
-    }
-
-
-    for gltf_texture: gltf.textures {
-        // @AntiSpec
-        // Textures should have a source in our implementation, though it's not required by the spec.
-        if gltf_texture._source == ABSENT {
-            print_to_builder(
-                *builder,
-                "GLTF at '%' has texture '%' which doesn't have a source",
-                path,
-                gltf_texture.name,
-            );
+    #if DO_SANITY_CHECKS {
+        error := validate_glb_header(header, path);
+        if error {
+            return error;
         }
     }
 
-    for gltf_mesh: gltf.meshes {
-        for gltf_primitive: gltf_mesh.primitives {
-            // @AntiSpec?
-            // Every primitive should have a position
-            if gltf_primitive.attributes._position == ABSENT {
-                print_to_builder(
-                    *builder,
-                    "GLTF at '%': Primitive of mesh '%' doesn't have POSITION attribute\n",
-                    path,
-                    gltf_mesh.name,
-                );
-            }
-
-            // Indices accessor checks
-            if gltf_primitive._indices != ABSENT {
-                gltf_indices_accessor := gltf.accessors[gltf_primitive._indices];
-
-                // Indices should be scalars
-                if gltf_indices_accessor.type != .SCALAR {
-                    print_to_builder(
-                        *builder,
-                        "GLTF at '%': Primitive of mesh '%' got indices accessor who's type is '%' instead of SCALAR\n",
-                        path,
-                        gltf_mesh.name,
-                        gltf_indices_accessor.type,
-                    );
-                }
-
-                // Indices should be u16/u32
-                if (
-                    gltf_indices_accessor.component_type != .UNSIGNED_SHORT
-                    && gltf_indices_accessor.component_type != .UNSIGNED_INT
-                ) {
-                    print_to_builder(
-                        *builder,
-                        "GLTF at '%': Primitive of mesh '%' got indices accessor who's component type is '%' instead of u16/u32\n",
-                        path,
-                        gltf_mesh.name,
-                        gltf_indices_accessor.component_type,
-                    );
-                }
-
-                // Target should be ELEMENT_ARRAY_BUFFER, but can be omitted. So we check for ARRAY_BUFFER only.
-                if (
-                    gltf_indices_accessor._buffer_view != ABSENT
-                    && gltf.buffer_views[gltf_indices_accessor._buffer_view].target == .ARRAY_BUFFER
-                ) {
-                    print_to_builder(
-                        *builder,
-                        "GLTF at '%': Primitive of mesh '%' got buffer view into indices data that has a target of ARRAY_BUFFER\n",
-                        path,
-                        gltf_mesh.name,
-                    );
-                }
-
-                // @AntiSpec?
-                // Buffer view shouldn't have a byte stride
-                if (
-                    gltf_indices_accessor._buffer_view != ABSENT
-                    && gltf.buffer_views[gltf_indices_accessor._buffer_view]._byte_stride != ABSENT
-                ) {
-                    print_to_builder(
-                        *builder,
-                        "GLTF at '%': Primitive of mesh '%' got buffer view into indices data that has a stride\n",
-                        path,
-                        gltf_mesh.name,
-                    );
-                }
-            }
+    // =========================================================================
+    // Get the JSON
+    // =========================================================================
+    json_chunk_info := cast(*GLB_Chunk_Info, glb_data.data + size_of(GLB_Header));
+    #if DO_SANITY_CHECKS {
+        error = validate_glb_json_chunk(json_chunk_info, path);
+        if error {
+            return error;
         }
     }
 
-    return builder_to_string(*builder,, temp);
+    json_data := string.{
+        data = glb_data.data + GLB_JSON_DATA_OFFSET,
+        count = json_chunk_info.length,
+    };
+
+    ok:, gltf.* = json_parse_string(json_data, GLTF);
+    if !ok {
+        return tprint(
+            "Failed to parse JSON from .glb at '%'",
+            path,
+        );
+    }
+
+    // =========================================================================
+    // Get the buffer
+    // =========================================================================
+    json_chunk_padded_length := (json_chunk_info.length + GLB_CHUNK_BOUNDARY_BYTE_SIZE - 1) & ~cast(u32, GLB_CHUNK_BOUNDARY_BYTE_SIZE - 1);
+    binary_chunk_offset := size_of(GLB_Header) + size_of(GLB_Chunk_Info) + json_chunk_padded_length;
+    has_binary_chunk := header.length > binary_chunk_offset;
+
+    // I guess this means that the binary data is in a separate .bin file?
+    // Spec says this chunk should be omitted "when it is stored by other means".
+    // Let's pretend these "means" include the separate .bin file.
+    if !has_binary_chunk {
+        return "";
+    }
+
+    binary_chunk_info := cast(*GLB_Chunk_Info, glb_data.data + binary_chunk_offset);
+    #if DO_SANITY_CHECKS {
+        error = validate_glb_binary_chunk(binary_chunk_info, path);
+        if error {
+            return error;
+        }
+    }
+
+    gltf.loaded_buffer_from_glb = string.{
+        data = glb_data.data + binary_chunk_offset + size_of(GLB_Chunk_Info),
+        count = binary_chunk_info.length,
+    };
+
+    return "";
 }
 
 #import "Basic";
@@ -397,3 +391,5 @@ validate :: (gltf: GLTF, path: string) -> errors: string {
 #import "Math";
 #import "jaison";
 FP :: #import "Flat_Pool";
+
+#load "gltf_validator.jai";

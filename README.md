@@ -1,7 +1,6 @@
 # Jai GLTF
 
-This is a simple module for loading `.gltf` files into a `Scene` which is friendly for rendering applications.<br>
-Only `.gltf` files are supported (no `.glb`).
+This is a simple module for loading `.gltf` and `.glb` files into a `Scene` which is friendly for rendering applications.<br>
 
 Currently the following features are not supported:
 - Sparse accessors
@@ -61,7 +60,8 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
 
 ## Todo
 
-- Support `.glb`
+- Add mesh merging
+- Support data uris
 - Support TEXCOORD_N (>0) in attributes
 - Support sparse accessors (`sparse` field in `GLTF_Accessor`)
 - Support animations (`animations`)

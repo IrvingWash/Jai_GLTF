@@ -92,6 +92,18 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         }
     }
 
+    // @Todo in a multiscene setup, if we want only one scene, we will save materials from other scenes
+    for gltf_material: gltf.materials {
+        error, material := convert_gltf_material(gltf, gltf_material, loaded_gltf_buffers, root_path);
+        if error {
+            release_scene(*scene);
+
+            return error, Scene.{};
+        }
+
+        array_add(*scene.materials, material);
+    }
+
     return "", scene;
 }
 
@@ -110,15 +122,24 @@ release_scene :: (scene: *Scene) {
         free(mesh.name);
         array_free(mesh.vertices);
         array_free(mesh.indices);
-
-        free(mesh.material.name);
-        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_path);
-        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_path);
-        free(mesh.material.normal_texture.texture.image_path);
-        free(mesh.material.occlusion_texture.texture.image_path);
-        free(mesh.material.emissive_texture.texture.image_path);
     }
     array_free(scene.meshes);
+
+    for material: scene.materials {
+        free(material.name);
+        free(material.pbr_metallic_roughness.base_color_texture.image_path);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_path);
+        free(material.normal_texture.texture.image_path);
+        free(material.occlusion_texture.texture.image_path);
+        free(material.emissive_texture.texture.image_path);
+
+        free(material.pbr_metallic_roughness.base_color_texture.image_data);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
+        free(material.normal_texture.texture.image_data);
+        free(material.occlusion_texture.texture.image_data);
+        free(material.emissive_texture.texture.image_data);
+    }
+    array_free(scene.materials);
 
     scene.* = {};
 }
@@ -224,19 +245,8 @@ convert_gltf_primitive_into_mesh :: (
     mesh: Mesh = {
         name = copy_string(common_name),
         mode = gltf_primitive.mode,
+        material_index = gltf_primitive._material,
     };
-
-    // =========================================================================
-    // Material
-    // =========================================================================
-    if gltf_primitive._material != ABSENT {
-        gltf_material := gltf.materials[gltf_primitive._material];
-
-        error:, mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
-        if error {
-            return error, mesh;
-        }
-    }
 
     // =========================================================================
     // Indices
@@ -515,6 +525,7 @@ get_type_and_byte_size_from_gltf_component_type :: (gltf_component_type: GLTF_Ac
 convert_gltf_material :: (
     gltf: GLTF,
     gltf_material: GLTF_Material,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path: string,
 ) -> error: string, Material {
     material: Material = {
@@ -538,6 +549,7 @@ convert_gltf_material :: (
         error:, material.pbr_metallic_roughness.base_color_texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -550,6 +562,7 @@ convert_gltf_material :: (
         error:, material.pbr_metallic_roughness.metallic_roughness_texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -569,6 +582,7 @@ convert_gltf_material :: (
         error:, material.normal_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -585,6 +599,7 @@ convert_gltf_material :: (
         error:, material.occlusion_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -601,6 +616,7 @@ convert_gltf_material :: (
         error:, material.emissive_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -611,7 +627,12 @@ convert_gltf_material :: (
     return "", material;
 }
 
-convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> error: string, Material.Texture {
+convert_gltf_texture :: (
+    gltf: GLTF,
+    gltf_texture: GLTF_Texture,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
+    root_path: string,
+) -> error: string, Material.Texture {
     texture: Material.Texture = ---;
 
     gltf_image   := gltf.images[gltf_texture._source];
@@ -620,12 +641,25 @@ convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: stri
         else GLTF_Sampler.{};
 
     texture = {
-        image_path = path_join(root_path, gltf_image.uri),
         mag_filter = gltf_sampler.mag_filter,
         min_filter = gltf_sampler.min_filter,
         wrap_s     = gltf_sampler.wrap_s,
         wrap_t     = gltf_sampler.wrap_t,
     };
+
+    if gltf_image._uri {
+        texture.image_path = path_join(root_path, gltf_image._uri);
+    } else {
+        gltf_buffer_view := gltf.buffer_views[gltf_image._buffer_view];
+        gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
+
+        texture.image_data = copy_string(
+            string.{
+                count = gltf_buffer_view.byte_length,
+                data = gltf_buffer.data + gltf_buffer_view.byte_offset,
+            },
+        );
+    }
 
     return "", texture;
 }
@@ -691,9 +725,23 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
     }
 
     buffers: [..]Loaded_GLTF_Buffer;
+    array_resize(*buffers, gltf.buffers.count);
 
+    has_added_loaded_buffer_from_glb: bool;
     for gltf_buffer: gltf.buffers {
-        absolute_buffer_path := path_join(root_path, gltf_buffer.uri);
+        if (
+            !gltf_buffer._uri
+            && gltf.loaded_buffer_from_glb
+            && !has_added_loaded_buffer_from_glb
+        ) {
+            buffers[it_index] = cast(Loaded_GLTF_Buffer, gltf.loaded_buffer_from_glb);
+
+            has_added_loaded_buffer_from_glb = true;
+
+            continue;
+        }
+
+        absolute_buffer_path := path_join(root_path, gltf_buffer._uri);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
             return tprint(
@@ -703,10 +751,7 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
             buffers;
         }
 
-        array_add(
-            *buffers,
-            cast(Loaded_GLTF_Buffer, bytes),
-        );
+        buffers[it_index] = cast(Loaded_GLTF_Buffer, bytes);
     }
 
     return "", buffers;
