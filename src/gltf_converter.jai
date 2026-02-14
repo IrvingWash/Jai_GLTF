@@ -42,10 +42,10 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         absolute_path =, ok := get_absolute_path(gltf_path,, converter.allocator);
         if !ok {
             return tprint(
-                    "Failed to get absolute path for '%'",
-                    gltf_path,
-                ),
-                scene;
+                "Failed to get absolute path for '%'\n",
+                gltf_path,
+            ),
+            scene;
         }
     }
 
@@ -696,8 +696,11 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
         absolute_buffer_path := path_join(root_path, gltf_buffer.uri);
         bytes, ok := read_entire_file(absolute_buffer_path);
         if !ok {
-            return tprint("Failed to read buffer from '%'", absolute_buffer_path),
-                buffers;
+            return tprint(
+                "Failed to read buffer from '%'\n",
+                absolute_buffer_path,
+            ),
+            buffers;
         }
 
         array_add(
