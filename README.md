@@ -61,6 +61,7 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
 
 ## Todo
 
+- Store materials separately as with GLB we copy the data too many times when it's per primitive
 - Add mesh merging
 - Support data uris
 - Support TEXCOORD_N (>0) in attributes
