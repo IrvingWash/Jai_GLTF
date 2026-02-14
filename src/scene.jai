@@ -87,7 +87,9 @@ Material :: struct {
     }
 
     Texture :: struct {
+        // Only one of these will be populated
         image_path: string;
+        image_data: string;
 
         mag_filter: Mag_Filter = .UNKNOWN;
         min_filter: Min_Filter = .UNKNOWN;

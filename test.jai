@@ -54,6 +54,7 @@ test_lantern :: () {
     model_path := path_join(#filepath, "assets/lantern/lantern.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
     if !expect(error, "", error) {
@@ -75,6 +76,7 @@ test_glb_lantern :: () {
     model_path := path_join(#filepath, "assets/lantern_glb/lantern.glb",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
     if !expect(error, "", error) {
@@ -96,6 +98,7 @@ test_mech :: () {
     model_path := path_join(#filepath, "assets/mech/mech.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
     if !expect(error, "", error) {
@@ -117,6 +120,7 @@ test_mech_glb :: () {
     model_path := path_join(#filepath, "assets/mech_glb/mech.glb",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
     if !expect(error, "", error) {
@@ -138,6 +142,7 @@ test_mccree :: () {
     model_path := path_join(#filepath, "assets/mccree/scene.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
     if !expect(error, "", error) {
@@ -273,6 +278,23 @@ create_reference :: (path: string, scene: GLTF.Scene) {
         ),
         serialized_scene,
     );
+}
+
+// Erasing this stuff so the printing is not too huge.
+erase_image_data :: (scene: *GLTF.Scene) {
+    for *mesh: scene.meshes {
+        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_data);
+        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
+        free(mesh.material.normal_texture.texture.image_data);
+        free(mesh.material.occlusion_texture.texture.image_data);
+        free(mesh.material.emissive_texture.texture.image_data);
+
+        mesh.material.pbr_metallic_roughness.base_color_texture.image_data = {};
+        mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_data = {};
+        mesh.material.normal_texture.texture.image_data = {};
+        mesh.material.occlusion_texture.texture.image_data = {};
+        mesh.material.emissive_texture.texture.image_data = {};
+    }
 }
 
 setup_formatting :: () {

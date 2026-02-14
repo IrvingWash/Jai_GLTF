@@ -2950,6 +2950,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -2957,6 +2958,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -2967,6 +2969,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -2977,6 +2980,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -2991,6 +2995,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -5669,6 +5674,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -5676,6 +5682,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -5686,6 +5693,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -5696,6 +5704,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -5710,6 +5719,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -8748,6 +8758,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -8755,6 +8766,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -8765,6 +8777,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -8775,6 +8788,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -8789,6 +8803,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -12772,6 +12787,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -12779,6 +12795,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -12789,6 +12806,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -12799,6 +12817,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -12813,6 +12832,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -20756,6 +20776,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -20763,6 +20784,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -20773,6 +20795,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -20783,6 +20806,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -20797,6 +20821,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -27720,6 +27745,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -27727,6 +27753,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -27737,6 +27764,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -27747,6 +27775,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -27761,6 +27790,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -34204,6 +34234,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -34211,6 +34242,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -34221,6 +34253,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -34231,6 +34264,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -34245,6 +34279,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -43313,6 +43348,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -43320,6 +43356,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -43330,6 +43367,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -43340,6 +43378,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -43354,6 +43393,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -51942,6 +51982,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -51949,6 +51990,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -51959,6 +52001,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -51969,6 +52012,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -51983,6 +52027,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -55591,6 +55636,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -55598,6 +55644,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -55608,6 +55655,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -55618,6 +55666,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -55632,6 +55681,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58280,6 +58330,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58287,6 +58338,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58297,6 +58349,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58307,6 +58360,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58321,6 +58375,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58794,6 +58849,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58801,6 +58857,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58811,6 +58868,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58821,6 +58879,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -58835,6 +58894,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -65578,6 +65638,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -65585,6 +65646,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -65595,6 +65657,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -65605,6 +65668,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -65619,6 +65683,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -66467,6 +66532,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -66474,6 +66540,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -66484,6 +66551,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -66494,6 +66562,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -66508,6 +66577,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -67086,6 +67156,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -67093,6 +67164,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -67103,6 +67175,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -67113,6 +67186,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -67127,6 +67201,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -69580,6 +69655,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -69587,6 +69663,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -69597,6 +69674,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -69607,6 +69685,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -69621,6 +69700,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70139,6 +70219,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70146,6 +70227,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70156,6 +70238,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70166,6 +70249,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70180,6 +70264,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70278,6 +70363,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70285,6 +70371,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70295,6 +70382,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70305,6 +70393,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70319,6 +70408,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70942,6 +71032,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70949,6 +71040,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70959,6 +71051,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70969,6 +71062,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -70983,6 +71077,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -71141,6 +71236,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -71148,6 +71244,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -71158,6 +71255,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -71168,6 +71266,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -71182,6 +71281,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -76230,6 +76330,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -76237,6 +76338,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -76247,6 +76349,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -76257,6 +76360,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -76271,6 +76375,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -77344,6 +77449,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -77351,6 +77457,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -77361,6 +77468,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -77371,6 +77479,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -77385,6 +77494,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -80108,6 +80218,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -80115,6 +80226,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -80125,6 +80237,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -80135,6 +80248,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -80149,6 +80263,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -83277,6 +83392,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -83284,6 +83400,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -83294,6 +83411,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -83304,6 +83422,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -83318,6 +83437,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -84121,6 +84241,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -84128,6 +84249,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -84138,6 +84260,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -84148,6 +84271,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -84162,6 +84286,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -87560,6 +87685,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -87567,6 +87693,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -87577,6 +87704,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -87587,6 +87715,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -87601,6 +87730,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -87999,6 +88129,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88006,6 +88137,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88016,6 +88148,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88026,6 +88159,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88040,6 +88174,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88558,6 +88693,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88565,6 +88701,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88575,6 +88712,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88585,6 +88723,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88599,6 +88738,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -88997,6 +89137,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -89004,6 +89145,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -89014,6 +89156,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -89024,6 +89167,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -89038,6 +89182,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90216,6 +90361,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90223,6 +90369,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90233,6 +90380,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90243,6 +90391,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90257,6 +90406,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90775,6 +90925,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90782,6 +90933,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90792,6 +90944,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90802,6 +90955,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -90816,6 +90970,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -91214,6 +91369,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -91221,6 +91377,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -91231,6 +91388,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -91241,6 +91399,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -91255,6 +91414,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92433,6 +92593,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92440,6 +92601,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92450,6 +92612,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92460,6 +92623,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92474,6 +92638,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92992,6 +93157,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -92999,6 +93165,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93009,6 +93176,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93019,6 +93187,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93033,6 +93202,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93431,6 +93601,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93438,6 +93609,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93448,6 +93620,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93458,6 +93631,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -93472,6 +93646,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -94650,6 +94825,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -94657,6 +94833,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -94667,6 +94844,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -94677,6 +94855,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -94691,6 +94870,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -99469,6 +99649,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -99476,6 +99657,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -99486,6 +99668,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -99496,6 +99679,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -99510,6 +99694,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -101903,6 +102088,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -101910,6 +102096,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -101920,6 +102107,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -101930,6 +102118,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -101944,6 +102133,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -102522,6 +102712,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -102529,6 +102720,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -102539,6 +102731,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -102549,6 +102742,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -102563,6 +102757,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104386,6 +104581,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104393,6 +104589,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104403,6 +104600,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104413,6 +104611,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104427,6 +104626,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104525,6 +104725,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104532,6 +104733,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104542,6 +104744,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104552,6 +104755,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -104566,6 +104770,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108129,6 +108334,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108136,6 +108342,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108146,6 +108353,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108156,6 +108364,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108170,6 +108379,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108463,6 +108673,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108470,6 +108681,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108480,6 +108692,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108490,6 +108703,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108504,6 +108718,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108692,6 +108907,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108699,6 +108915,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108709,6 +108926,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108719,6 +108937,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -108733,6 +108952,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110211,6 +110431,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110218,6 +110439,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110228,6 +110450,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110238,6 +110461,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110252,6 +110476,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110410,6 +110635,7 @@ Scene{
     roughness_factor=1;
     base_color_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110417,6 +110643,7 @@ Scene{
     };
     metallic_roughness_texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110427,6 +110654,7 @@ Scene{
     scale=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110437,6 +110665,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -110451,6 +110680,7 @@ Scene{
     };
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;

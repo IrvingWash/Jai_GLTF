@@ -117,6 +117,11 @@ release_scene :: (scene: *Scene) {
         free(mesh.material.normal_texture.texture.image_path);
         free(mesh.material.occlusion_texture.texture.image_path);
         free(mesh.material.emissive_texture.texture.image_path);
+        free(mesh.material.pbr_metallic_roughness.base_color_texture.image_data);
+        free(mesh.material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
+        free(mesh.material.normal_texture.texture.image_data);
+        free(mesh.material.occlusion_texture.texture.image_data);
+        free(mesh.material.emissive_texture.texture.image_data);
     }
     array_free(scene.meshes);
 
@@ -232,7 +237,7 @@ convert_gltf_primitive_into_mesh :: (
     if gltf_primitive._material != ABSENT {
         gltf_material := gltf.materials[gltf_primitive._material];
 
-        error:, mesh.material = convert_gltf_material(gltf, gltf_material, root_path);
+        error:, mesh.material = convert_gltf_material(gltf, gltf_material, loaded_gltf_buffers, root_path);
         if error {
             return error, mesh;
         }
@@ -515,6 +520,7 @@ get_type_and_byte_size_from_gltf_component_type :: (gltf_component_type: GLTF_Ac
 convert_gltf_material :: (
     gltf: GLTF,
     gltf_material: GLTF_Material,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
     root_path: string,
 ) -> error: string, Material {
     material: Material = {
@@ -538,6 +544,7 @@ convert_gltf_material :: (
         error:, material.pbr_metallic_roughness.base_color_texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -550,6 +557,7 @@ convert_gltf_material :: (
         error:, material.pbr_metallic_roughness.metallic_roughness_texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -569,6 +577,7 @@ convert_gltf_material :: (
         error:, material.normal_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -585,6 +594,7 @@ convert_gltf_material :: (
         error:, material.occlusion_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -601,6 +611,7 @@ convert_gltf_material :: (
         error:, material.emissive_texture.texture = convert_gltf_texture(
             gltf,
             gltf_texture,
+            loaded_gltf_buffers,
             root_path,
         );
         if error {
@@ -611,7 +622,12 @@ convert_gltf_material :: (
     return "", material;
 }
 
-convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: string) -> error: string, Material.Texture {
+convert_gltf_texture :: (
+    gltf: GLTF,
+    gltf_texture: GLTF_Texture,
+    loaded_gltf_buffers: []Loaded_GLTF_Buffer,
+    root_path: string,
+) -> error: string, Material.Texture {
     texture: Material.Texture = ---;
 
     gltf_image   := gltf.images[gltf_texture._source];
@@ -620,12 +636,29 @@ convert_gltf_texture :: (gltf: GLTF, gltf_texture: GLTF_Texture, root_path: stri
         else GLTF_Sampler.{};
 
     texture = {
-        image_path = path_join(root_path, gltf_image.uri),
         mag_filter = gltf_sampler.mag_filter,
         min_filter = gltf_sampler.min_filter,
         wrap_s     = gltf_sampler.wrap_s,
         wrap_t     = gltf_sampler.wrap_t,
     };
+
+    if gltf_image.uri {
+        texture.image_path = path_join(root_path, gltf_image.uri);
+    } else {
+        if gltf_image._buffer_view == ABSENT { // @Todo move this into the validator. Image sould have an uri or buffer view
+            return "No buffer view for image which doesn't have an uri", texture;
+        }
+
+        gltf_buffer_view := gltf.buffer_views[gltf_image._buffer_view];
+        gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
+
+        texture.image_data = copy_string(
+            string.{
+                count = gltf_buffer_view.byte_length,
+                data = gltf_buffer.data + gltf_buffer_view.byte_offset,
+            },
+        );
+    }
 
     return "", texture;
 }

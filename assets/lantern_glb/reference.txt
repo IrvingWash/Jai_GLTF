@@ -14007,14 +14007,16 @@ Scene{
     metallic_factor=1;
     roughness_factor=1;
     base_color_texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
      wrap_t=REPEAT;
     };
     metallic_roughness_texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -14024,7 +14026,8 @@ Scene{
    normal_texture=Normal_Texture{
     scale=1;
     texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -14035,6 +14038,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -14048,7 +14052,8 @@ Scene{
      z=1;
     };
     texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -25426,14 +25431,16 @@ Scene{
     metallic_factor=1;
     roughness_factor=1;
     base_color_texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
      wrap_t=REPEAT;
     };
     metallic_roughness_texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -25443,7 +25450,8 @@ Scene{
    normal_texture=Normal_Texture{
     scale=1;
     texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -25454,6 +25462,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -25467,7 +25476,8 @@ Scene{
      z=1;
     };
     texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -63500,14 +63510,16 @@ Scene{
     metallic_factor=1;
     roughness_factor=1;
     base_color_texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
      wrap_t=REPEAT;
     };
     metallic_roughness_texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -63517,7 +63529,8 @@ Scene{
    normal_texture=Normal_Texture{
     scale=1;
     texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -63528,6 +63541,7 @@ Scene{
     strength=1;
     texture=Texture{
      image_path="";
+     image_data="";
      mag_filter=UNKNOWN;
      min_filter=UNKNOWN;
      wrap_s=REPEAT;
@@ -63541,7 +63555,8 @@ Scene{
      z=1;
     };
     texture=Texture{
-     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern_glb/";
+     image_path="";
+     image_data="";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
