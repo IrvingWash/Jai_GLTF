@@ -650,10 +650,6 @@ convert_gltf_texture :: (
     if gltf_image._uri {
         texture.image_path = path_join(root_path, gltf_image._uri);
     } else {
-        if gltf_image._buffer_view == ABSENT { // @Todo move this into the validator. Image sould have an uri or buffer view
-            return "No buffer view for image which doesn't have an uri", texture;
-        }
-
         gltf_buffer_view := gltf.buffer_views[gltf_image._buffer_view];
         gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
 

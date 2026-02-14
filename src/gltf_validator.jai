@@ -125,6 +125,14 @@ validate_textures_and_images :: (gltf: GLTF, builder: *String_Builder, path: str
                 path,
             );
         }
+
+        if !gltf_image._uri && gltf_image._buffer_view == ABSENT {
+            print_to_builder(
+                builder,
+                "GLTF at '%' got an image without uri and without buffer view. We consider it malformed\n",
+                path,
+            );
+        }
     }
 }
 
