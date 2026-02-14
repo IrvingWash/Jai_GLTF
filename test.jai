@@ -93,8 +93,6 @@ test_mccree :: () {
     error, scene := GLTF.load_scene(converter, model_path);
     GLTF.destroy_converter(converter);
 
-    assert(!error, error);
-
     if !expect(error, "", error) {
         return;
     }

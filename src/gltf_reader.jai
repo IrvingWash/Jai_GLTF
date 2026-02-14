@@ -23,50 +23,6 @@ GLTF :: struct {
     textures:     [..]GLTF_Texture;
 }
 
-validate :: (gltf: GLTF, path: string) -> errors: string {
-    errors: String_Builder;
-    errors.allocator = temp;
-
-    SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
-    if !array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version) {
-        print_to_builder(
-            *errors,
-            "GLTF at '%' is version '%', but only % are supported",
-            path,
-            gltf.asset.version,
-            SUPPORTED_GLTF_VERSIONS,
-        );
-    }
-
-    if gltf._scene == ABSENT {
-        print_to_builder(
-            *errors,
-            "GLTF at '%' doesn't have a default scene",
-            path,
-        );
-    }
-
-    for gltf_mesh: gltf.meshes {
-        for gltf_primitive: gltf_mesh.primitives {
-            if gltf_primitive.attributes._position == ABSENT {
-                print_to_builder(
-                    *errors,
-                    "GLTF at '%'",
-                    path,
-                );
-                print_to_builder(
-                    *errors,
-                    "Primitive of mesh '%' doesn't have POSITION attribute",
-                    gltf_mesh.name,
-                );
-                print("%\n", gltf_primitive);
-            }
-        }
-    }
-
-    return builder_to_string(*errors);
-}
-
 /*
     This procedure is called from a single place with a pool allocator.
     We don't need to free anything here.
@@ -302,6 +258,93 @@ GLTF_Texture :: struct {
 
 
 #scope_file
+
+validate :: (gltf: GLTF, path: string) -> errors: string {
+    push_allocator(temp);
+
+    builder: String_Builder;
+
+    // We support only GLTF 2.0
+    SUPPORTED_GLTF_VERSIONS :: string.["2.0"];
+    if !array_find(SUPPORTED_GLTF_VERSIONS, gltf.asset.version) {
+        print_to_builder(
+            *builder,
+            "GLTF at '%' is version '%', but only % are supported\n",
+            path,
+            gltf.asset.version,
+            SUPPORTED_GLTF_VERSIONS,
+        );
+    }
+
+    // There should be a scene
+    if gltf._scene == ABSENT {
+        print_to_builder(
+            *builder,
+            "GLTF at '%' doesn't have a default scene\n",
+            path,
+        );
+    }
+
+    for gltf_mesh: gltf.meshes {
+        // All the primitives should have position
+        for gltf_primitive: gltf_mesh.primitives {
+            // Every primitive should have a position
+            if gltf_primitive.attributes._position == ABSENT {
+                print_to_builder(
+                    *builder,
+                    "GLTF at '%': Primitive of mesh '%' doesn't have POSITION attribute\n",
+                    path,
+                    gltf_mesh.name,
+                );
+            }
+
+            // Indices accessor checks
+            if gltf_primitive._indices != ABSENT {
+                gltf_indices_accessor := gltf.accessors[gltf_primitive._indices];
+
+                // Indices should be scalars
+                if gltf_indices_accessor.type != .SCALAR {
+                    print_to_builder(
+                        *builder,
+                        "GLTF at '%': Primitive of mesh '%' got indices accessor who's type is '%' instead of SCALAR\n",
+                        path,
+                        gltf_mesh.name,
+                        gltf_indices_accessor.type,
+                    );
+                }
+
+                // Indices should be u16/u32
+                if (
+                    gltf_indices_accessor.component_type != .UNSIGNED_SHORT
+                    && gltf_indices_accessor.component_type != .UNSIGNED_INT
+                ) {
+                    print_to_builder(
+                        *builder,
+                        "GLTF at '%': Primitive of mesh '%' got indices accessor who's component type is '%' instead of u16/u32\n",
+                        path,
+                        gltf_mesh.name,
+                        gltf_indices_accessor.component_type,
+                    );
+                }
+
+                // Target should be ELEMENT_ARRAY_BUFFER, but can be omitted. So we check for ARRAY_BUFFER only.
+                if (
+                    gltf_indices_accessor._buffer_view != ABSENT
+                    && gltf.buffer_views[gltf_indices_accessor._buffer_view].target == .ARRAY_BUFFER
+                ) {
+                    print_to_builder(
+                        *builder,
+                        "GLTF at '%': Primitive of mesh '%' got buffer view into indices data that has a target of ARRAY_BUFFER\n",
+                        path,
+                        gltf_mesh.name,
+                    );
+                }
+            }
+        }
+    }
+
+    return builder_to_string(*builder,, temp);
+}
 
 #import "Basic";
 #import "String";

@@ -230,10 +230,6 @@ convert_gltf_primitive_into_mesh :: (
     root_path:           string,
     common_name:         string,
 ) -> error: string, Mesh {
-    #if DO_SANITY_CHECKS {
-        assert(gltf_primitive.attributes._position != ABSENT, "Primitive of mesh '%' has no position", common_name);
-    }
-
     mesh: Mesh = {
         name = copy_string(common_name),
         mode = gltf_primitive.mode,
@@ -453,27 +449,6 @@ parse_gltf_index_atttribute :: (
             result;
     }
 
-    #if DO_SANITY_CHECKS {
-        assert(
-            gltf_accessor.type == .SCALAR,
-            "Got an indices attribute, but it's type is '%' instaed of a scalar",
-            gltf_accessor.type,
-        );
-
-        assert(
-            gltf.buffer_views[gltf_accessor._buffer_view].target == .ELEMENT_ARRAY_BUFFER,
-            "Expected '%' target for and index buffer view, but got '%'",
-            GLTF_Buffer_View.Target.ELEMENT_ARRAY_BUFFER,
-            gltf.buffer_views[gltf_accessor._buffer_view].target,
-        );
-
-        assert(
-            gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride == ABSENT,
-            "Expected indices buffer view to not have a byte stride, but got '%'",
-            gltf.buffer_views[gltf_accessor._buffer_view]._byte_stride,
-        );
-    }
-
     // =========================================================================
     // Parsing
     // =========================================================================
@@ -482,24 +457,20 @@ parse_gltf_index_atttribute :: (
     index_type_byte_size := get_type_and_byte_size_from_gltf_component_type(
         gltf_accessor.component_type,
     );
-    #if DO_SANITY_CHECKS {
-        assert(
-            index_type == u16 || index_type == u32,
-            "Expected type of indices be either u16 or u32, but got '%'",
-            index_type,
-        );
-    }
 
     gltf_buffer_view := gltf.buffer_views[gltf_accessor._buffer_view];
     loaded_gltf_buffer := loaded_gltf_buffers[gltf_buffer_view.buffer];
 
     start_offset := gltf_accessor.byte_offset + gltf_buffer_view.byte_offset;
+    step := ifx gltf_buffer_view._byte_stride == ABSENT
+        then index_type_byte_size
+        else gltf_buffer_view._byte_stride;
 
     array_resize(*result, gltf_accessor.count);
 
     // If GLTF data is u32 too, we can just copy the memory
     if index_type == u32 {
-        bytes_to_copy := gltf_accessor.count * index_type_byte_size;
+        bytes_to_copy := gltf_accessor.count * step;
         memcpy(
             result.data,
             loaded_gltf_buffer.data + start_offset,

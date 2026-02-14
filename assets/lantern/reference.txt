@@ -14007,14 +14007,14 @@ Scene{
     metallic_factor=1;
     roughness_factor=1;
     base_color_texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
      wrap_t=REPEAT;
     };
     metallic_roughness_texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -14024,7 +14024,7 @@ Scene{
    normal_texture=Normal_Texture{
     scale=1;
     texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -14048,7 +14048,7 @@ Scene{
      z=1;
     };
     texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -25426,14 +25426,14 @@ Scene{
     metallic_factor=1;
     roughness_factor=1;
     base_color_texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
      wrap_t=REPEAT;
     };
     metallic_roughness_texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -25443,7 +25443,7 @@ Scene{
    normal_texture=Normal_Texture{
     scale=1;
     texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -25467,7 +25467,7 @@ Scene{
      z=1;
     };
     texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -63470,14 +63470,14 @@ Scene{
     metallic_factor=1;
     roughness_factor=1;
     base_color_texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
      wrap_t=REPEAT;
     };
     metallic_roughness_texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -63487,7 +63487,7 @@ Scene{
    normal_texture=Normal_Texture{
     scale=1;
     texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
@@ -63511,7 +63511,7 @@ Scene{
      z=1;
     };
     texture=Texture{
-     image_path="/Users/irvingwash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
+     image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
      mag_filter=LINEAR;
      min_filter=LINEAR_MIPMAP_LINEAR;
      wrap_s=REPEAT;
