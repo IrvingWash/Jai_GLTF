@@ -51,6 +51,10 @@ Vertex :: struct {
     position: Vector3;
     normal:   Vector3 = { 0, 0, 1 };
     uv:       Vector2;
+
+    POSITION_OFFSET :: 0;
+    NORMAL_OFFSET   :: size_of(Vector3);
+    UV_OFFSET       :: size_of(Vector3) * 2;
 }
 
 Material :: struct {

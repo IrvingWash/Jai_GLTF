@@ -152,7 +152,7 @@ make_renderable_triangle :: () -> Renderable {
     // =========================================================================
     converter := GLTF.create_converter();
 
-    error, triangle_scene := GLTF.load_scene(converter, "assets/triangle/triangle.gltf");
+    error, triangle_scene := GLTF.load_scene(converter, "assets/triangle_glb/triangle.glb");
     assert(!error, error);
     defer GLTF.release_scene(*triangle_scene);
 
@@ -201,7 +201,7 @@ make_renderable_triangle :: () -> Renderable {
             GL_FLOAT,
             GL_FALSE,
             size_of(GLTF.Vertex),
-            cast(*void, 0),
+            cast(*void, GLTF.Vertex.POSITION_OFFSET),
         );
         // Normal
         glEnableVertexAttribArray(1);
@@ -211,7 +211,7 @@ make_renderable_triangle :: () -> Renderable {
             GL_FLOAT,
             GL_FALSE,
             size_of(GLTF.Vertex),
-            cast(*void, size_of(Vector3)),
+            cast(*void, GLTF.Vertex.NORMAL_OFFSET),
         );
         // UV
         glEnableVertexAttribArray(2);
@@ -221,7 +221,7 @@ make_renderable_triangle :: () -> Renderable {
             GL_FLOAT,
             GL_FALSE,
             size_of(GLTF.Vertex),
-            cast(*void, size_of(Vector3) * 2), // @Todo store offsets in Scene types
+            cast(*void, GLTF.Vertex.UV_OFFSET),
         );
 
         array_add(*renderable.meshes, renderable_mesh);
