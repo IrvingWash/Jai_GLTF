@@ -77,7 +77,7 @@ test_lantern :: () {
     erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -99,7 +99,7 @@ test_glb_lantern :: () {
     erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -121,7 +121,7 @@ test_mech :: () {
     erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -143,7 +143,7 @@ test_mech_glb :: () {
     erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -165,7 +165,7 @@ test_mccree :: () {
     erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -193,7 +193,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
         ),,
         temp,
     );
-    if !expect(ok, true, "There is no hashed reference file!\n") {
+    if !expect_equal(ok, true, "There is no hashed reference file!\n") {
         return false;
     }
 
@@ -204,7 +204,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
         model_path,
     );
 
-    if expect(actual_hashed, expected_hashed, "Hashes didn't match for '%'\n", model_path) {
+    if expect_equal(actual_hashed, expected_hashed, "Hashes didn't match for '%'\n", model_path) {
         return true;
     }
 
@@ -221,7 +221,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
         temp,
     );
 
-    if !expect(ok, true, "There is no reference file!\n") {
+    if !expect_equal(ok, true, "There is no reference file!\n") {
         return false;
     }
 
@@ -229,7 +229,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
 
     actual_lines := split(actual, "\n",, temp);
 
-    expect(
+    expect_equal(
         expected_lines.count,
         actual_lines.count,
         #string DONE
@@ -244,7 +244,7 @@ Expected % lines got %
     for expected_line: expected_lines {
         actual_line := actual_lines[it_index];
 
-        expect(
+        expect_equal(
             expected_line,
             actual_line,
             #string DONE
@@ -263,7 +263,7 @@ Got:      '%'
     return false;
 }
 
-expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool {
+expect_equal :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool {
     if actual == expected {
         return true;
     }
