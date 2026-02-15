@@ -98,6 +98,11 @@ main :: () {
     }
     defer glDeleteProgram(shader);
 
+    uColor := glGetUniformLocation(shader, "uColor");
+    uModelTransform := glGetUniformLocation(shader, "uModelTransform");
+    uViewTransform := glGetUniformLocation(shader, "uViewTransform");
+    uProjectionTransform := glGetUniformLocation(shader, "uProjectionTransform");
+
     // =========================================================================
     // Create transforms
     // =========================================================================
@@ -114,10 +119,6 @@ main :: () {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader);
-        uColor := glGetUniformLocation(shader, "uColor");
-        uModelTransform := glGetUniformLocation(shader, "uModelTransform");
-        uViewTransform := glGetUniformLocation(shader, "uViewTransform");
-        uProjectionTransform := glGetUniformLocation(shader, "uProjectionTransform");
 
         for renderable_triangle.meshes {
             if it.material.double_sided {
