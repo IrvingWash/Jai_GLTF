@@ -34,10 +34,12 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aUV;
 
 uniform mat4 uModelTransform;
+uniform mat4 uViewTransform;
+uniform mat4 uProjectionTransform;
 
 void main()
 {
-    gl_Position = uModelTransform * vec4(aPosition.x, aPosition.z, 0, 1);
+    gl_Position = uProjectionTransform * uViewTransform * uModelTransform * vec4(aPosition, 1);
 }
 GLSL
 
@@ -97,6 +99,12 @@ main :: () {
     defer glDeleteProgram(shader);
 
     // =========================================================================
+    // Create transforms
+    // =========================================================================
+    view_transform := make_look_at_matrix({ 1, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 }, false);
+    projection_transform := make_projection_matrix(60, 800.0 / 600.0, 0.1, 1000);
+
+    // =========================================================================
     // Game loop
     // =========================================================================
     while !should_quit {
@@ -108,6 +116,8 @@ main :: () {
         glUseProgram(shader);
         uColor := glGetUniformLocation(shader, "uColor");
         uModelTransform := glGetUniformLocation(shader, "uModelTransform");
+        uViewTransform := glGetUniformLocation(shader, "uViewTransform");
+        uProjectionTransform := glGetUniformLocation(shader, "uProjectionTransform");
 
         for renderable_triangle.meshes {
             if it.material.double_sided {
@@ -127,6 +137,8 @@ main :: () {
                 glUniform4f(uColor, x, y, z, w);
             }
             glUniformMatrix4fv(uModelTransform, 1, GL_TRUE, *it.local_transform.coef[0][0]);
+            glUniformMatrix4fv(uViewTransform, 1, GL_TRUE, *view_transform.coef[0][0]);
+            glUniformMatrix4fv(uProjectionTransform, 1, GL_TRUE, *projection_transform.coef[0][0]);
 
             glBindVertexArray(it.vao);
 
@@ -231,7 +243,6 @@ make_renderable_triangle :: () -> Renderable {
 }
 
 release_renderable :: (renderable: *Renderable) {
-    print("releasing\n");
     using gl;
 
     for renderable.meshes {
