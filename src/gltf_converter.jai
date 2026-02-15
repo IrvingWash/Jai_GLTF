@@ -724,8 +724,8 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
         );
     }
 
-    buffers: [..]Loaded_GLTF_Buffer;
-    array_resize(*buffers, gltf.buffers.count);
+    result: [..]Loaded_GLTF_Buffer;
+    array_resize(*result, gltf.buffers.count);
 
     has_added_loaded_buffer_from_glb: bool;
     for gltf_buffer: gltf.buffers {
@@ -734,7 +734,7 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
             && gltf.loaded_buffer_from_glb
             && !has_added_loaded_buffer_from_glb
         ) {
-            buffers[it_index] = cast(Loaded_GLTF_Buffer, gltf.loaded_buffer_from_glb);
+            result[it_index] = cast(Loaded_GLTF_Buffer, gltf.loaded_buffer_from_glb);
 
             has_added_loaded_buffer_from_glb = true;
 
@@ -748,13 +748,13 @@ load_gltf_buffers :: (gltf: GLTF, root_path: string) -> error: string, []Loaded_
                 "Failed to read buffer from '%'\n",
                 absolute_buffer_path,
             ),
-            buffers;
+            result;
         }
 
-        buffers[it_index] = cast(Loaded_GLTF_Buffer, bytes);
+        result[it_index] = cast(Loaded_GLTF_Buffer, bytes);
     }
 
-    return "", buffers;
+    return "", result;
 }
 
 get_gltf_primitives_count :: (gltf: GLTF) -> u32 {
