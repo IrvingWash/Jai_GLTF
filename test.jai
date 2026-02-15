@@ -281,6 +281,7 @@ expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool 
     }
 
     print_color(format_string, ..args, color = .RED, to_standard_error = true);
+    print("\n");
 
     return false;
 }
