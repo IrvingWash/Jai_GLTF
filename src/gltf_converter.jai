@@ -72,10 +72,11 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
     gltf_scene := gltf.scenes[gltf._scene];
 
     scene.name = copy_string(gltf_scene.name);
-    // @Todo these reserves are correct situationally because we don't allow multiple scenes.
+    // @Robustness these reserves are correct situationally because we don't allow multiple scenes.
     // If we had/allowed more scenes, we'd reserve too much memory with the current code.
     array_reserve(*scene.nodes, gltf.nodes.count);
     array_reserve(*scene.meshes, get_gltf_primitives_count(gltf));
+    array_reserve(*scene.materials, gltf.materials.count);
 
     for gltf_node_index: gltf_scene.nodes {
         error := convert_gltf_node(
@@ -92,7 +93,7 @@ load_scene :: (converter: *GLTF_Converter, gltf_path: string) -> error: string, 
         }
     }
 
-    // @Todo in a multiscene setup, if we want only one scene, we will save materials from other scenes
+    // @Robustness in a multiscene setup, if we want only one scene, we will save materials from other scenes
     for gltf_material: gltf.materials {
         error, material := convert_gltf_material(gltf, gltf_material, loaded_gltf_buffers, root_path);
         if error {
