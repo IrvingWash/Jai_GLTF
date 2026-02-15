@@ -39,6 +39,7 @@ Mesh :: struct {
     min_position: Vector3;
     max_position: Vector3;
 
+    // Index to the matireal in `Scene.materials`
     material_index: s32 = ABSENT;
 
     Mode :: GLTF_Mesh.Primitive.Mode;
@@ -90,6 +91,7 @@ Material :: struct {
 
     Texture :: struct {
         // Only one of these will be populated
+        // @Todo make this a union when we have full supported for unions in the compiler
         image_path: string;
         image_data: string;
 
