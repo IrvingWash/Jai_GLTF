@@ -40,7 +40,7 @@ create_refs: bool = false;
 
     print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
 
-    threads: [5]*Thread;
+    threads: [6]*Thread;
     for *thread: threads {
         thread.* = New(Thread);
     }
@@ -56,6 +56,7 @@ create_refs: bool = false;
     thread_init(threads[2], (thread: *Thread) -> s64 { setup_formatting(); test_glb_lantern(); return 0; });
     thread_init(threads[3], (thread: *Thread) -> s64 { setup_formatting(); test_lantern(); return 0; });
     thread_init(threads[4], (thread: *Thread) -> s64 { setup_formatting(); test_mccree(); return 0; });
+    thread_init(threads[5], (thread: *Thread) -> s64 { setup_formatting(); test_mccree_glb(); return 0; });
 
     for thread: threads {
         thread_start(thread);
@@ -178,6 +179,28 @@ test_mccree :: () {
     compare_scene_with_reference(model_path, scene);
 }
 
+test_mccree_glb :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/mccree_glb/scene.glb",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
+    GLTF.destroy_converter(converter);
+
+    if !expect_equal(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
 compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: bool {
     root_dir := path_strip_filename(model_path,, temp);
 
@@ -193,7 +216,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
         ),,
         temp,
     );
-    if !expect_equal(ok, true, "There is no hashed reference file!\n") {
+    if !expect_equal(ok, true, "There is no hashed reference file for '%'\n", model_path) {
         return false;
     }
 
