@@ -5,9 +5,12 @@
 #import "String";
 #import "File";
 #import "File_Utilities";
+#import "Metaprogram_Plugins";
 
 Config :: struct {
     example: string;
+    plugins_to_create: [..]Plugin_To_Create;
+    plugins_to_create.allocator = temp;
 }
 
 BUILD_PATH_BASE :: "build";
@@ -15,7 +18,7 @@ ENTRY_POINT_PATH_BASE :: "examples";
 MAIN_FILE_PATH :: "src/main.jai";
 EXECUTABLE_NAME :: "target";
 
-#run {
+#run,stallable {
     set_build_options_dc({
         do_output = false,
         write_added_strings = false,
@@ -34,7 +37,7 @@ EXECUTABLE_NAME :: "target";
         terminate("No example provided\n");
     }
 
-    build(config.example, build_options_dc);
+    build(config.example, build_options_dc, config.plugins_to_create);
 
     reset_temporary_storage();
 }
@@ -46,12 +49,17 @@ make_config_from_args :: (args: []string) -> Config {
         config.example = args[0];
     }
 
+    ok, plugins_to_create := parse_plugin_arguments(args);
+    assert(ok, "Failed to parse plugin arguments");
+    config.plugins_to_create = plugins_to_create;
+
     return config;
 }
 
 build :: (
     example_name: string,
-    build_options_dc: Build_Options
+    build_options_dc: Build_Options,
+    plugins_to_create: []Plugin_To_Create,
 ) {
     workspace := compiler_create_workspace(example_name);
 
@@ -80,7 +88,26 @@ build :: (
 
     make_directory_if_it_does_not_exist(build_dir_path, recursive = true);
 
+    plugins: [..]*Metaprogram_Plugin;
+    plugins.allocator = temp;
+    ok := init_plugins(plugins_to_create, *plugins, workspace);
+    assert(ok, "Failed to create plugins");
+
+    intercept_flags: Intercept_Flags;
+
+    for plugin: plugins {
+        if plugin.before_intercept {
+            plugin.before_intercept(plugin, *intercept_flags);
+        }
+    }
+
     compiler_begin_intercept(workspace);
+
+    for plugin: plugins {
+        if plugin.add_source {
+            plugin.add_source(plugin);
+        }
+    }
 
     add_build_file(
         tprint(
@@ -92,14 +119,30 @@ build :: (
         workspace,
     );
 
-    on_compiler_message();
+    on_compiler_message(plugins);
 
     compiler_end_intercept(workspace);
+
+    for plugin: plugins {
+        if plugin.finish {
+            plugin.finish(plugin);
+        }
+
+        if plugin.shutdown {
+            plugin.shutdown(plugin);
+        }
+    }
 }
 
-on_compiler_message :: () {
+on_compiler_message :: (plugins: []*Metaprogram_Plugin) {
     while true {
         message := compiler_wait_for_message();
+
+        for plugin: plugins {
+            if plugin.message {
+                plugin.message(plugin, message);
+            }
+        }
 
         if message.kind == {
             case .COMPLETE;
