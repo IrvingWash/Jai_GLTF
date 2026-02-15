@@ -180,7 +180,7 @@ make_renderable_triangle :: () -> Renderable {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderable_mesh.ebo);
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER,
-            it.indices.count * size_of(GLTF.Mesh.INDEX_TYPE), // @Todo Don't hardcode the type
+            it.indices.count * size_of(GLTF.Mesh.INDEX_TYPE),
             it.indices.data,
             GL_STATIC_DRAW,
         );
