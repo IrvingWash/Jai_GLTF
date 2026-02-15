@@ -42,6 +42,8 @@ Mesh :: struct {
     // Index to the matireal in `Scene.materials`
     material_index: s32 = ABSENT;
 
+    INDEX_TYPE :: u32;
+
     Mode :: GLTF_Mesh.Primitive.Mode;
 }
 

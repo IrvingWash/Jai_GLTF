@@ -2,7 +2,11 @@
 API
 
 ```
-load_scene :: (gltf_path: string) -> ok: bool, error: string, Scene;
+create_converter :: () -> *GLTF_Converter;
+
+destroy_converter :: (converter: *GLTF_Converter);
+
+load_scene :: (gltf_path: string) -> error: string, Scene;
 
 release_scene :: (scene: *Scene);
 ```
