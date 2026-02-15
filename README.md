@@ -25,6 +25,8 @@ release_scene :: (scene: *Scene);
 
 Scene outlives the converter. The converter is needed only to call load_scene and can be immetiately released afterwards.
 
+Check the `examples` directory to see the module in action.
+
 ## Develompent
 
 ### Cloning and dependencies
