@@ -56,9 +56,16 @@ void main()
 }
 GLSL
 
-should_quit: bool;
-
 SIXTY_DEGREES_IN_RADIANS :: 1.0472;
+
+WINDOW_WIDTH  :: 800.0;
+WINDOW_HEIGHT :: 600.0;
+
+Z_NEAR :: 0.1;
+Z_FAR  :: 1000;
+
+should_quit: bool;
+projection_transform: Matrix4;
 
 main :: () {
     defer report_memory_leaks();
@@ -66,7 +73,7 @@ main :: () {
     // =========================================================================
     // Window
     // =========================================================================
-    window := WC.create_window(800, 600, "Triangle");
+    window := WC.create_window(cast(s32, WINDOW_WIDTH), cast(s32, WINDOW_HEIGHT), "Triangle");
     Simp.set_render_target(window);
 
     // =========================================================================
@@ -109,7 +116,12 @@ main :: () {
     // Create transforms
     // =========================================================================
     view_transform := make_look_at_matrix({ 3, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 }, false);
-    projection_transform := make_projection_matrix(SIXTY_DEGREES_IN_RADIANS, 800.0 / 600.0, 0.1, 1000);
+    projection_transform = make_projection_matrix(
+        SIXTY_DEGREES_IN_RADIANS,
+        WINDOW_WIDTH / WINDOW_HEIGHT,
+        Z_NEAR,
+        Z_FAR,
+    );
 
     // =========================================================================
     // Game loop
@@ -266,5 +278,17 @@ process_input :: () {
             case .QUIT;
                 should_quit = true;
         }
+    }
+
+    for Input.get_window_resizes() {
+        Simp.update_window(it.window);
+        width, height := Simp.get_render_dimensions(it.window);
+
+        projection_transform = make_projection_matrix(
+            SIXTY_DEGREES_IN_RADIANS,
+            cast(float, width) / cast(float, height),
+            Z_NEAR,
+            Z_FAR,
+        );
     }
 }
