@@ -61,18 +61,6 @@ create_refs: bool = false;
         thread_start(thread);
     }
 
-    check_all_threads_are_done :: (threads: []*Thread) -> bool {
-        for thread: threads {
-            if thread_is_done(thread) {
-                continue;
-            } else {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     while !check_all_threads_are_done(threads) {
         sleep_milliseconds(16);
     }
@@ -328,6 +316,18 @@ erase_image_data :: (scene: *GLTF.Scene) {
         material.occlusion_texture.texture.image_data = {};
         material.emissive_texture.texture.image_data = {};
     }
+}
+
+check_all_threads_are_done :: (threads: []*Thread) -> bool {
+    for thread: threads {
+        if thread_is_done(thread) {
+            continue;
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 setup_formatting :: () {

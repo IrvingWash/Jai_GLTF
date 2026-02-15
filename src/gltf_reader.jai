@@ -322,6 +322,7 @@ GLB_CHUNK_BOUNDARY_BYTE_SIZE :: 4;
 GLTF_EXTENSION :: "gltf";
 GLB_EXTENSION  :: "glb";
 
+// Reading the JSON chunk into the passed parameter. Also adding the buffer from glb.
 parse_glb_data :: (glb_data: string, gltf: *GLTF, path: string) -> error: string {
     header := cast(*GLB_Header, glb_data.data);
 
