@@ -58,6 +58,8 @@ GLSL
 
 should_quit: bool;
 
+SIXTY_DEGREES_IN_RADIANS :: 1.0472;
+
 main :: () {
     defer report_memory_leaks();
 
@@ -106,8 +108,8 @@ main :: () {
     // =========================================================================
     // Create transforms
     // =========================================================================
-    view_transform := make_look_at_matrix({ 1, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 }, false);
-    projection_transform := make_projection_matrix(60, 800.0 / 600.0, 0.1, 1000);
+    view_transform := make_look_at_matrix({ 3, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 }, false);
+    projection_transform := make_projection_matrix(SIXTY_DEGREES_IN_RADIANS, 800.0 / 600.0, 0.1, 1000);
 
     // =========================================================================
     // Game loop
