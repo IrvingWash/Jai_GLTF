@@ -63,7 +63,6 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
 ## Todo
 
 - Use unions where possible (especiall in GLTF types declarations) when unions are fully supported
-- Maybe delete image_path on texture and have image_data. That means single api for the scene, which doesn't depend on the type of gltf file.
 - Add mesh merging
 - Support data uris
 - Support TEXCOORD_N (>0) in attributes
