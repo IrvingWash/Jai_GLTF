@@ -1,11 +1,12 @@
 {
     "roots": [
         "module.jai",
-        "tests/tests.jai",
+        "test.jai",
         "install_tools.jai",
-        "examples/minimal_opengl_traingle/src/main.jai"
+        "examples/minimal_opengl_triangle/src/main.jai",
+        "examples/textured_opengl_model/src/main.jai"
     ],
-    "build_root": "tests.jai",
+    "build_root": "build_example.jai",
     "local_modules": [
         "modules"
     ],
