@@ -8,7 +8,11 @@
 #import "String";
 #import "File";
 #import "Print_Color";
+#import "xxHash";
+#import "Thread";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
+
+HASH_SEED :: 1;
 
 create_refs: bool = false;
 
@@ -17,6 +21,10 @@ create_refs: bool = false;
         do_output = false,
         write_added_strings = false,
     });
+
+    defer report_memory_leaks();
+
+    defer reset_temporary_storage();
 
     cli_arguments := get_build_options().compile_time_command_line;
     for argument: cli_arguments {
@@ -32,15 +40,35 @@ create_refs: bool = false;
 
     print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
 
-    test_lantern();
-    test_mech();
-    test_mccree();
+    threads: [8]*Thread;
+    for *thread: threads {
+        thread.* = New(Thread);
+    }
+    defer {
+        for thread: threads {
+            thread_deinit(thread);
+            free(thread);
+        }
+    }
+
+    thread_init(threads[0], (thread: *Thread) -> s64 { setup_formatting(); test_mech_glb(); return 0; });
+    thread_init(threads[1], (thread: *Thread) -> s64 { setup_formatting(); test_mech(); return 0; });
+    thread_init(threads[2], (thread: *Thread) -> s64 { setup_formatting(); test_glb_lantern(); return 0; });
+    thread_init(threads[3], (thread: *Thread) -> s64 { setup_formatting(); test_lantern(); return 0; });
+    thread_init(threads[4], (thread: *Thread) -> s64 { setup_formatting(); test_mccree(); return 0; });
+    thread_init(threads[5], (thread: *Thread) -> s64 { setup_formatting(); test_mccree_glb(); return 0; });
+    thread_init(threads[6], (thread: *Thread) -> s64 { setup_formatting(); test_triangle(); return 0; });
+    thread_init(threads[7], (thread: *Thread) -> s64 { setup_formatting(); test_triangle_glb(); return 0; });
+
+    for thread: threads {
+        thread_start(thread);
+    }
+
+    while !check_all_threads_are_done(threads) {
+        sleep_milliseconds(16);
+    }
 
     print_color("Jai_GLTF: All tests finished\n", color = .YELLOW, style = .BOLD);
-
-    reset_temporary_storage();
-
-    report_memory_leaks();
 }
 
 test_lantern :: () {
@@ -49,9 +77,32 @@ test_lantern :: () {
     model_path := path_join(#filepath, "assets/lantern/lantern.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
+test_glb_lantern :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/lantern_glb/lantern.glb",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
+    GLTF.destroy_converter(converter);
+
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -70,9 +121,32 @@ test_mech :: () {
     model_path := path_join(#filepath, "assets/mech/mech.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
+test_mech_glb :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/mech_glb/mech.glb",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
+    GLTF.destroy_converter(converter);
+
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -91,9 +165,76 @@ test_mccree :: () {
     model_path := path_join(#filepath, "assets/mccree/scene.gltf",, temp);
 
     error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
-    if !expect(error, "", error) {
+    if !expect_equal(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
+test_mccree_glb :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/mccree_glb/scene.glb",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
+    GLTF.destroy_converter(converter);
+
+    if !expect_equal(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
+test_triangle :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/triangle/triangle.gltf",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
+    GLTF.destroy_converter(converter);
+
+    if !expect_equal(error, "", error) {
+        return;
+    }
+
+    defer GLTF.release_scene(*scene);
+
+    if create_refs {
+        create_reference(model_path, scene);
+    }
+
+    compare_scene_with_reference(model_path, scene);
+}
+
+test_triangle_glb :: () {
+    converter := GLTF.create_converter();
+
+    model_path := path_join(#filepath, "assets/triangle_glb/triangle.glb",, temp);
+
+    error, scene := GLTF.load_scene(converter, model_path);
+    erase_image_data(*scene);
+    GLTF.destroy_converter(converter);
+
+    if !expect_equal(error, "", error) {
         return;
     }
 
@@ -107,25 +248,57 @@ test_mccree :: () {
 }
 
 compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: bool {
-    expected, ok := read_entire_file(
+    root_dir := path_strip_filename(model_path,, temp);
+
+    actual := tprint("%", scene,, temp);
+
+    actual_hashed := native_XXH64(actual.data, xx actual.count, HASH_SEED);
+
+    expected_hashed_string, ok := read_entire_file(
         path_join(
-            path_strip_filename(model_path,, temp),
+            root_dir,
+            "hashed_reference.txt",,
+            temp
+        ),,
+        temp,
+    );
+    if !expect_equal(ok, true, "There is no hashed reference file for '%'\n", model_path) {
+        return false;
+    }
+
+    expected_hashed:, ok=, remainder := string_to_int(expected_hashed_string, T = u64);
+    assert(
+        ok && !remainder,
+        "Failed to compare hashes for '%', because the stored hash couldn't be parsed into a number",
+        model_path,
+    );
+
+    if expect_equal(actual_hashed, expected_hashed, "Hashes didn't match for '%'\n", model_path) {
+        return true;
+    }
+
+    // =========================================================================
+    // Generate readable errors
+    // =========================================================================
+
+    expected:, ok = read_entire_file(
+        path_join(
+            root_dir,
             "reference.txt",,
             temp
         ),,
         temp,
     );
 
-    if !expect(ok, true, "There is no reference file!") {
+    if !expect_equal(ok, true, "There is no reference file!\n") {
         return false;
     }
 
     expected_lines := split(expected, "\n",, temp);
 
-    actual := tprint("%", scene);
     actual_lines := split(actual, "\n",, temp);
 
-    if !expect(
+    expect_equal(
         expected_lines.count,
         actual_lines.count,
         #string DONE
@@ -135,14 +308,12 @@ Expected % lines got %
         model_path,
         expected_lines.count,
         actual_lines.count,
-    ) {
-        return false;
-    }
+    );
 
     for expected_line: expected_lines {
         actual_line := actual_lines[it_index];
 
-        if !expect(
+        expect_equal(
             expected_line,
             actual_line,
             #string DONE
@@ -155,33 +326,77 @@ Got:      '%'
             it_index + 1,
             expected_line,
             actual_line,
-        ) {
-            return false;
-        }
+        );
     }
 
-    return true;
+    return false;
 }
 
-expect :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool {
+expect_equal :: (actual: $T, expected: T, format_string: string, args: ..Any) -> bool {
     if actual == expected {
         return true;
     }
 
     print_color(format_string, ..args, color = .RED, to_standard_error = true);
+    print("\n");
 
     return false;
 }
 
 create_reference :: (path: string, scene: GLTF.Scene) {
+    serialized_scene := tprint("%", scene);
+
+    root_dir := path_strip_filename(path,, temp);
+
     write_entire_file(
         path_join(
-            path_strip_filename(path),
+            root_dir,
+            "hashed_reference.txt",,
+            temp,
+        ),
+        tprint(
+            "%",
+            native_XXH64(serialized_scene.data, xx serialized_scene.count, HASH_SEED,, temp)
+        ),
+    );
+
+    write_entire_file(
+        path_join(
+            root_dir,
             "reference.txt",,
             temp
         ),
-        tprint("%", scene),
+        serialized_scene,
     );
+}
+
+// Erasing this stuff so the printing is not too huge.
+erase_image_data :: (scene: *GLTF.Scene) {
+    for *material: scene.materials {
+        free(material.pbr_metallic_roughness.base_color_texture.image_data);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_data);
+        free(material.normal_texture.texture.image_data);
+        free(material.occlusion_texture.texture.image_data);
+        free(material.emissive_texture.texture.image_data);
+
+        material.pbr_metallic_roughness.base_color_texture.image_data = {};
+        material.pbr_metallic_roughness.metallic_roughness_texture.image_data = {};
+        material.normal_texture.texture.image_data = {};
+        material.occlusion_texture.texture.image_data = {};
+        material.emissive_texture.texture.image_data = {};
+    }
+}
+
+check_all_threads_are_done :: (threads: []*Thread) -> bool {
+    for thread: threads {
+        if thread_is_done(thread) {
+            continue;
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 setup_formatting :: () {

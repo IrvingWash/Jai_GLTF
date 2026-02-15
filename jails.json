@@ -2,7 +2,8 @@
     "roots": [
         "module.jai",
         "tests/tests.jai",
-        "install_tools.jai"
+        "install_tools.jai",
+        "examples/minimal_opengl_traingle/src/main.jai"
     ],
     "build_root": "tests.jai",
     "local_modules": [

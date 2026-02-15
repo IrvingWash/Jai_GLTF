@@ -2,9 +2,11 @@ Scene :: struct {
     name:   string;
 
     // Flat array of all the nodes
-    nodes:  [..]Node;
+    nodes:     [..]Node;
     // Flat array of all the meshes
-    meshes: [..]Mesh;
+    meshes:    [..]Mesh;
+    // Flat array of all the materials
+    materials: [..]Material;
 }
 
 Node :: struct {
@@ -34,10 +36,13 @@ Mesh :: struct {
     indices:  [..]u32;
     mode:     Mode = .TRIANGLES;
 
-    material: Material;
-
     min_position: Vector3;
     max_position: Vector3;
+
+    // Index to the matireal in `Scene.materials`
+    material_index: s32 = ABSENT;
+
+    INDEX_TYPE :: u32;
 
     Mode :: GLTF_Mesh.Primitive.Mode;
 }
@@ -46,6 +51,10 @@ Vertex :: struct {
     position: Vector3;
     normal:   Vector3 = { 0, 0, 1 };
     uv:       Vector2;
+
+    POSITION_OFFSET :: 0;
+    NORMAL_OFFSET   :: size_of(Vector3);
+    UV_OFFSET       :: size_of(Vector3) * 2;
 }
 
 Material :: struct {
@@ -87,7 +96,10 @@ Material :: struct {
     }
 
     Texture :: struct {
+        // Only one of these will be populated
+        // @Todo make this a union when we have full supported for unions in the compiler
         image_path: string;
+        image_data: string;
 
         mag_filter: Mag_Filter = .UNKNOWN;
         min_filter: Min_Filter = .UNKNOWN;
