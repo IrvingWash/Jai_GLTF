@@ -50,7 +50,7 @@ validate_glb_json_chunk :: (json_chunk_info: GLB_Chunk_Info, path: string) -> er
 validate_glb_binary_chunk :: (binary_chunk_info: GLB_Chunk_Info, path: string) -> error: string {
     if binary_chunk_info.type != .BIN {
         return tprint(
-            "Binary chunk in GLB at '%' is malformed: expected it's type to be BIN, but got '%\n'",
+            "Binary chunk in GLB at '%' is malformed: expected it's type to be BIN, but got '%'\n",
             path,
             binary_chunk_info.type,
         );
@@ -158,7 +158,7 @@ validate_meshes :: (gltf: GLTF, builder: *String_Builder, path: string) {
                 if gltf_indices_accessor.type != .SCALAR {
                     print_to_builder(
                         builder,
-                        "GLTF at '%': Primitive of mesh '%' got indices accessor who's type is '%' instead of SCALAR\n",
+                        "GLTF at '%': Primitive of mesh '%' got indices accessor whose type is '%' instead of SCALAR\n",
                         path,
                         gltf_mesh.name,
                         gltf_indices_accessor.type,
@@ -172,7 +172,7 @@ validate_meshes :: (gltf: GLTF, builder: *String_Builder, path: string) {
                 ) {
                     print_to_builder(
                         builder,
-                        "GLTF at '%': Primitive of mesh '%' got indices accessor who's component type is '%' instead of u16/u32\n",
+                        "GLTF at '%': Primitive of mesh '%' got indices accessor whose component type is '%' instead of u16/u32\n",
                         path,
                         gltf_mesh.name,
                         gltf_indices_accessor.component_type,
@@ -234,20 +234,6 @@ validate_buffers_without_uris :: (gltf: GLTF, builder: *String_Builder, path: st
         }
     }
 
-    if (
-        buffers_without_uri_indices.count == 1
-        && gltf.loaded_buffer_from_glb
-        && gltf.buffers[buffers_without_uri_indices[0]].byte_length != gltf.loaded_buffer_from_glb.count
-    ) {
-        print_to_builder(
-            builder,
-            "GLTF at '%' got 1 buffer without uri and a buffer from glb, but the buffers byte_lengt is not equal to the glb's\n",
-            path,
-        );
-
-        return;
-    }
-
     // Got a dangling buffer from gltf
     if buffers_without_uri_indices.count == 0 && gltf.loaded_buffer_from_glb {
         print_to_builder(
@@ -283,6 +269,20 @@ validate_buffers_without_uris :: (gltf: GLTF, builder: *String_Builder, path: st
         print_to_builder(
             builder,
             "GLTF at '%' got a buffer without uri, but doesn't have a buffer from glb\n",
+            path,
+        );
+
+        return;
+    }
+
+    if (
+        buffers_without_uri_indices.count == 1
+        && gltf.loaded_buffer_from_glb
+        && gltf.buffers[buffers_without_uri_indices[0]].byte_length != gltf.loaded_buffer_from_glb.count
+    ) {
+        print_to_builder(
+            builder,
+            "GLTF at '%' got 1 buffer without uri and a buffer from glb, but the buffers byte_length is not equal to the glb's\n",
             path,
         );
 

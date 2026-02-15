@@ -9,6 +9,7 @@
 #import "File";
 #import "Print_Color";
 #import "xxHash";
+#import "Thread";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
 HASH_SEED :: 1;
@@ -20,6 +21,10 @@ create_refs: bool = false;
         do_output = false,
         write_added_strings = false,
     });
+
+    defer report_memory_leaks();
+
+    defer reset_temporary_storage();
 
     cli_arguments := get_build_options().compile_time_command_line;
     for argument: cli_arguments {
@@ -35,17 +40,44 @@ create_refs: bool = false;
 
     print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
 
-    test_mech_glb();
-    test_mech();
-    test_glb_lantern();
-    test_lantern();
-    test_mccree();
+    threads: [5]*Thread;
+    for *thread: threads {
+        thread.* = New(Thread);
+    }
+    defer {
+        for thread: threads {
+            thread_deinit(thread);
+            free(thread);
+        }
+    }
+
+    thread_init(threads[0], (thread: *Thread) -> s64 { setup_formatting(); test_mech_glb(); return 0; });
+    thread_init(threads[1], (thread: *Thread) -> s64 { setup_formatting(); test_mech(); return 0; });
+    thread_init(threads[2], (thread: *Thread) -> s64 { setup_formatting(); test_glb_lantern(); return 0; });
+    thread_init(threads[3], (thread: *Thread) -> s64 { setup_formatting(); test_lantern(); return 0; });
+    thread_init(threads[4], (thread: *Thread) -> s64 { setup_formatting(); test_mccree(); return 0; });
+
+    for thread: threads {
+        thread_start(thread);
+    }
+
+    check_all_threads_are_done :: (threads: []*Thread) -> bool {
+        for thread: threads {
+            if thread_is_done(thread) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    while !check_all_threads_are_done(threads) {
+        sleep_milliseconds(16);
+    }
 
     print_color("Jai_GLTF: All tests finished\n", color = .YELLOW, style = .BOLD);
-
-    reset_temporary_storage();
-
-    report_memory_leaks();
 }
 
 test_lantern :: () {
@@ -184,7 +216,7 @@ compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: b
         model_path,
     );
 
-    if expect(actual_hashed, expected_hashed, "Hashes didn't match for '%'", model_path) {
+    if expect(actual_hashed, expected_hashed, "Hashes didn't match for '%'\n", model_path) {
         return true;
     }
 
