@@ -212,7 +212,7 @@ make_renderable :: () -> Renderable {
     // =========================================================================
     converter := GLTF.create_converter();
 
-    error, lantern_scene := GLTF.load_scene(converter, "assets/lantern/lantern.gltf");
+    error, lantern_scene := GLTF.load_scene(converter, "assets/lantern_glb/lantern.glb");
     assert(!error, error);
     defer GLTF.release_scene(*lantern_scene);
 
@@ -245,7 +245,20 @@ make_renderable :: () -> Renderable {
         // Textures
         // =========================================================================
         width, height, channels: s32;
-        data := stbi_load(temp_c_string(renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_path), *width, *height, *channels, 0);
+        data: *u8;
+        if renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_path {
+            data = stbi_load(temp_c_string(renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_path), *width, *height, *channels, 0);
+        } else {
+            data = stbi_load_from_memory(
+                temp_c_string(renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_data),
+                xx renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_data.count,
+                *width,
+                *height,
+                *channels,
+                0,
+            );
+        }
+        defer stbi_image_free(data);
 
         glGenTextures(1, *renderable_mesh.texture);
         glBindTexture(GL_TEXTURE_2D, renderable_mesh.texture);
