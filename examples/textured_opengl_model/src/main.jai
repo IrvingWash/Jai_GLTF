@@ -252,14 +252,18 @@ make_renderable :: () -> Renderable {
         // =========================================================================
         // Textures
         // =========================================================================
+        image_path := renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_path;
+
         width, height, channels: s32;
         data: *u8;
-        if renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_path {
-            data = stbi_load(temp_c_string(renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_path), *width, *height, *channels, 0);
+        if image_path {
+            data = stbi_load(temp_c_string(image_path), *width, *height, *channels, 0);
         } else {
+            image_data := renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_data;
+
             data = stbi_load_from_memory(
-                temp_c_string(renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_data),
-                xx renderable_mesh.material.pbr_metallic_roughness.base_color_texture.image_data.count,
+                temp_c_string(image_data),
+                xx image_data.count,
                 *width,
                 *height,
                 *channels,
