@@ -76,8 +76,6 @@ GLSL
 
 SIXTY_DEGREES_IN_RADIANS :: 1.0472;
 
-should_quit: bool;
-
 WINDOW_WIDTH :: 800.0;
 WINDOW_HEIGHT :: 600.0;
 
@@ -85,6 +83,7 @@ Z_NEAR :: 0.1;
 Z_FAR  :: 1000;
 
 projection_transform: Matrix4;
+should_quit: bool;
 
 main :: () {
     defer report_memory_leaks();
