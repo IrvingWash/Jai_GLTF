@@ -59,6 +59,8 @@ Currently it adds a pre-commit hook which runs tests and checks for `@``no_commi
     Contains `.gltf` files for testing.
 - `modules/`
     Contains third party dependencies.
+- `examples/`
+    Usage examples. Run with `jai ./build_example.jai - <example_directory_name> +Autorun`
 
 ## Todo
 

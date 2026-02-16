@@ -1,4 +1,4 @@
-// jai ./bulid_example.jai - minimal_opengl_triangle
+// jai ./bulid_example.jai - minimal_opengl_triangle +Autorun
 
 #import "Basic";
 #import "Compiler";
