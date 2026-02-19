@@ -53,7 +53,6 @@ create_refs: bool = false;
         #run path_join(#filepath, "assets/mccree_glb/scene.glb",, temp),
         #run path_join(#filepath, "assets/triangle/triangle.gltf",, temp),
         #run path_join(#filepath, "assets/triangle_glb/triangle.glb",, temp),
-        #run path_join(#filepath, "assets/lights_punctual_lamp/lights_punctual_lamp.glb",, temp),
     ];
 
     threads: [GLTF_PATHS.count]*Thread;
