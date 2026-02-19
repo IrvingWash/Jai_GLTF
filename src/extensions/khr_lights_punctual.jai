@@ -11,7 +11,7 @@ KHR_Light :: struct {
     type: Light_Type = .UNKNOWN;
 
     color:     [3]float    = float.[1, 1, 1];
-    intencity: float       = 1;
+    intensity: float       = 1;
     range:     float       = FLOAT32_INFINITY;
 
     spot: Spot;
