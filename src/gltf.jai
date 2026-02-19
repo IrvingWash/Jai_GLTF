@@ -1,3 +1,5 @@
+#scope_module
+
 GLTF :: struct {
     asset: GLTF_Asset;
 

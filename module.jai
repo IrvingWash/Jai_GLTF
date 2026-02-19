@@ -10,8 +10,6 @@ load_scene :: (gltf_path: string) -> error: string, Scene;
 
 release_scene :: (scene: *Scene);
 ```
-
-The `Scene` itself is defined in "./src/gltf_parser.jai".
 */
 
 #module_parameters(DO_SANITY_CHECKS: bool = false);

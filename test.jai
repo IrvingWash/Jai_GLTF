@@ -1,5 +1,9 @@
 // Pass `--create-refs` to generate new scene "expected" results for models
 
+// @Todo image_data and image_path is not tested, because they're being erased for these reasons:
+// - image_path contains absolute paths, which means testing them on different machines is a bit complicated.
+// - image_data is huge and binary. No particular need to compare them.
+
 #import "Basic"()(
     MEMORY_DEBUGGER = true,
     TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
@@ -7,9 +11,9 @@
 #import "Compiler";
 #import "String";
 #import "File";
-#import "Print_Color";
 #import "xxHash";
 #import "Thread";
+#import "Print_Color";
 GLTF :: #import,file "module.jai"(DO_SANITY_CHECKS = true);
 
 HASH_SEED :: 1;
@@ -38,29 +42,37 @@ create_refs: bool = false;
 
     setup_formatting();
 
-    print_color("Jai_GLTF: Running tests\n", color = .YELLOW, style = .BOLD);
+    log("Jai_GLTF: Running tests\n");
 
-    threads: [8]*Thread;
-    for *thread: threads {
-        thread.* = New(Thread);
-    }
-    defer {
-        for thread: threads {
-            thread_deinit(thread);
-            free(thread);
-        }
-    }
+    GLTF_PATHS :: string.[
+        #run path_join(#filepath, "assets/lantern/lantern.gltf",, temp),
+        #run path_join(#filepath, "assets/lantern_glb/lantern.glb",, temp),
+        #run path_join(#filepath, "assets/mech/mech.gltf",, temp),
+        #run path_join(#filepath, "assets/mech_glb/mech.glb",, temp),
+        #run path_join(#filepath, "assets/mccree/scene.gltf",, temp),
+        #run path_join(#filepath, "assets/mccree_glb/scene.glb",, temp),
+        #run path_join(#filepath, "assets/triangle/triangle.gltf",, temp),
+        #run path_join(#filepath, "assets/triangle_glb/triangle.glb",, temp),
+    ];
 
-    thread_init(threads[0], (thread: *Thread) -> s64 { setup_formatting(); test_mech_glb(); return 0; });
-    thread_init(threads[1], (thread: *Thread) -> s64 { setup_formatting(); test_mech(); return 0; });
-    thread_init(threads[2], (thread: *Thread) -> s64 { setup_formatting(); test_glb_lantern(); return 0; });
-    thread_init(threads[3], (thread: *Thread) -> s64 { setup_formatting(); test_lantern(); return 0; });
-    thread_init(threads[4], (thread: *Thread) -> s64 { setup_formatting(); test_mccree(); return 0; });
-    thread_init(threads[5], (thread: *Thread) -> s64 { setup_formatting(); test_mccree_glb(); return 0; });
-    thread_init(threads[6], (thread: *Thread) -> s64 { setup_formatting(); test_triangle(); return 0; });
-    thread_init(threads[7], (thread: *Thread) -> s64 { setup_formatting(); test_triangle_glb(); return 0; });
+    threads: [GLTF_PATHS.count]*Thread;
 
-    for thread: threads {
+    for path: GLTF_PATHS {
+        thread := New(Thread);
+        thread.data = *path;
+
+        threads[it_index] = thread;
+
+        thread_init(
+            threads[it_index],
+            (thread: *Thread) -> s64 {
+                path := cast(*string, thread.data);
+
+                test_gltf(path.*);
+                return 0;
+            }
+        );
+
         thread_start(thread);
     }
 
@@ -68,15 +80,20 @@ create_refs: bool = false;
         sleep_milliseconds(16);
     }
 
-    print_color("Jai_GLTF: All tests finished\n", color = .YELLOW, style = .BOLD);
+    for thread: threads {
+        thread_deinit(thread);
+        free(thread);
+    }
+
+    log("Jai_GLTF: All tests finished\n");
 }
 
-test_lantern :: () {
+test_gltf :: (path: string) {
+    setup_formatting();
+
     converter := GLTF.create_converter();
 
-    model_path := path_join(#filepath, "assets/lantern/lantern.gltf",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
+    error, scene := GLTF.load_scene(converter, path);
     erase_image_data(*scene);
     GLTF.destroy_converter(converter);
 
@@ -87,164 +104,12 @@ test_lantern :: () {
     defer GLTF.release_scene(*scene);
 
     if create_refs {
-        create_reference(model_path, scene);
+        create_reference(path, scene);
     }
 
-    compare_scene_with_reference(model_path, scene);
-}
+    compare_scene_with_reference(path, scene);
 
-test_glb_lantern :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/lantern_glb/lantern.glb",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
-}
-
-test_mech :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/mech/mech.gltf",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
-}
-
-test_mech_glb :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/mech_glb/mech.glb",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
-}
-
-test_mccree :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/mccree/scene.gltf",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
-}
-
-test_mccree_glb :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/mccree_glb/scene.glb",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
-}
-
-test_triangle :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/triangle/triangle.gltf",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
-}
-
-test_triangle_glb :: () {
-    converter := GLTF.create_converter();
-
-    model_path := path_join(#filepath, "assets/triangle_glb/triangle.glb",, temp);
-
-    error, scene := GLTF.load_scene(converter, model_path);
-    erase_image_data(*scene);
-    GLTF.destroy_converter(converter);
-
-    if !expect_equal(error, "", error) {
-        return;
-    }
-
-    defer GLTF.release_scene(*scene);
-
-    if create_refs {
-        create_reference(model_path, scene);
-    }
-
-    compare_scene_with_reference(model_path, scene);
+    log("Finished testing file at %", path);
 }
 
 compare_scene_with_reference :: (model_path: string, scene: GLTF.Scene) -> ok: bool {
@@ -379,11 +244,23 @@ erase_image_data :: (scene: *GLTF.Scene) {
         free(material.occlusion_texture.texture.image_data);
         free(material.emissive_texture.texture.image_data);
 
+        free(material.pbr_metallic_roughness.base_color_texture.image_path);
+        free(material.pbr_metallic_roughness.metallic_roughness_texture.image_path);
+        free(material.normal_texture.texture.image_path);
+        free(material.occlusion_texture.texture.image_path);
+        free(material.emissive_texture.texture.image_path);
+
         material.pbr_metallic_roughness.base_color_texture.image_data = {};
         material.pbr_metallic_roughness.metallic_roughness_texture.image_data = {};
         material.normal_texture.texture.image_data = {};
         material.occlusion_texture.texture.image_data = {};
         material.emissive_texture.texture.image_data = {};
+
+        material.pbr_metallic_roughness.base_color_texture.image_path = {};
+        material.pbr_metallic_roughness.metallic_roughness_texture.image_path = {};
+        material.normal_texture.texture.image_path = {};
+        material.occlusion_texture.texture.image_path = {};
+        material.emissive_texture.texture.image_path = {};
     }
 }
 

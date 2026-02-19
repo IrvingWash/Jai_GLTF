@@ -1,0 +1,26 @@
+name: No Merge Guard
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check-no-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for no_merge markers
+        run: |
+          git fetch origin ${{ github.base_ref }}
+
+          marker="@""no_merge"
+
+          # Only fail if the marker is present on *added* lines in the PR
+          if git diff origin/${{ github.base_ref }}...HEAD -U0 | grep -nE "^\+.*${marker}"; then
+            echo "❌ Found ${marker} markers in added lines of PR diff. Remove before merging."
+            exit 1
+          fi
+
+          echo "✅ No forbidden markers found."
