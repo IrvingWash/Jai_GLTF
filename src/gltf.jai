@@ -1,3 +1,7 @@
+#scope_module
+
+#load "extensions/khr_lights_punctual.jai";
+
 GLTF :: struct {
     asset: GLTF_Asset;
 
@@ -14,9 +18,15 @@ GLTF :: struct {
     scenes:       [..]GLTF_Scene;
     textures:     [..]GLTF_Texture;
 
+    extensions: GLTF_Extensions;
+
     // The binary buffer from glb is stored here.
     // There's, of course, no such a field in the spec, but this is the simplest way to pass the data around.
     loaded_buffer_from_glb: string; @JsonIgnore
+}
+
+GLTF_Extensions :: struct {
+    khr_lights_punctual: KHR_Lights_Punctual; @JsonName(KHR_lights_punctual)
 }
 
 GLTF_Asset :: struct {
@@ -175,6 +185,8 @@ GLTF_Node :: struct {
      scale:       [3]float  = float.[1, 1, 1];
      translation: [3]float;
      name:        string;
+
+    extensions: GLTF_Extensions;
 }
 
 GLTF_Sampler :: struct {

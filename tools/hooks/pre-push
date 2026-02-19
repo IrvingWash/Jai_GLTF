@@ -1,0 +1,19 @@
+#!/bin/bash
+
+protected_branches="main master"
+
+while read local_ref local_sha remote_ref remote_sha
+do
+  branch=$(echo "$remote_ref" | sed 's|refs/heads/||')
+
+  for protected in $protected_branches; do
+    if [ "$branch" = "$protected" ]; then
+      if git diff $remote_sha...$local_sha | grep -n "@no_merge"; then
+        echo "❌ Push to $branch blocked: @no_merge marker found."
+        exit 1
+      fi
+    fi
+  done
+done
+
+exit 0

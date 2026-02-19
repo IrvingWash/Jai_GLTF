@@ -63356,7 +63356,7 @@ Scene{
    metallic_factor=1;
    roughness_factor=1;
    base_color_texture=Texture{
-    image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_0.png";
+    image_path="";
     image_data="";
     mag_filter=LINEAR;
     min_filter=LINEAR_MIPMAP_LINEAR;
@@ -63364,7 +63364,7 @@ Scene{
     wrap_t=REPEAT;
    };
    metallic_roughness_texture=Texture{
-    image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_1.png";
+    image_path="";
     image_data="";
     mag_filter=LINEAR;
     min_filter=LINEAR_MIPMAP_LINEAR;
@@ -63375,7 +63375,7 @@ Scene{
   normal_texture=Normal_Texture{
    scale=1;
    texture=Texture{
-    image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_2.png";
+    image_path="";
     image_data="";
     mag_filter=LINEAR;
     min_filter=LINEAR_MIPMAP_LINEAR;
@@ -63401,7 +63401,7 @@ Scene{
     z=1;
    };
    texture=Texture{
-    image_path="/home/irving_wash/Documents/PPG/Jai_GLTF/./assets/lantern/Image_3.png";
+    image_path="";
     image_data="";
     mag_filter=LINEAR;
     min_filter=LINEAR_MIPMAP_LINEAR;
