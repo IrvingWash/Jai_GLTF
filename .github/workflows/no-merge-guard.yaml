@@ -11,13 +11,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Check for @no_merge markers
         run: |
-          # Compare PR changes against base branch
           git fetch origin ${{ github.base_ref }}
-          if git diff origin/${{ github.base_ref }}...HEAD | grep -n "@no_merge"; then
-            echo "❌ Found @no_merge markers in PR diff. Remove before merging."
+
+          marker="@""no_merge"
+
+          # Only fail if the marker is present on *added* lines in the PR
+          if git diff origin/${{ github.base_ref }}...HEAD -U0 | grep -nE "^\+.*${marker}"; then
+            echo "❌ Found ${marker} markers in added lines of PR diff. Remove before merging."
             exit 1
           fi
 
