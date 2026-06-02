@@ -6,7 +6,7 @@
 
 #import "Basic"()(
     MEMORY_DEBUGGER = true,
-    TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
+    // TEMP_ALLOCATOR_OVERWRITE_MEMORY = true,
 );
 #import "Compiler";
 #import "String";

@@ -1,6 +1,6 @@
 #import "Basic"()(
     MEMORY_DEBUGGER = true,
-    TEMP_ALLOCATOR_POISON_FREED_MEMORY = true,
+    // TEMP_ALLOCATOR_OVERWRITE_MEMORY = true,
 );
 WC :: #import "Window_Creation";
 Simp :: #import "Simp"; // Only for set_render_target and swap_buffers
